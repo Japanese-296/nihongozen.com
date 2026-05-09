@@ -423,8 +423,9 @@
     <div class="streak-badge">🔥 <span id="streak-count">0</span> day streak</div>
     <div class="xp-badge">⭐ <span id="xp-count">0</span> XP</div>
     <div class="user-avatar" id="user-avatar-btn">
-      <span id="avatar-initials">?</span>
-      <img id="avatar-img" src="" alt="" style="display:none"/>
+      <span id="avatar-initials"></span>
+      <img id="avatar-img" src="" alt="" style="display:none"
+        onerror="this.style.display='none'; document.getElementById('avatar-initials').style.display=''"/>
       <div class="user-dropdown">
         <div style="padding:.6rem 1rem; font-size:.85rem; font-weight:600;" id="dd-name">User</div>
         <div style="padding:0 1rem .6rem; font-size:.75rem; color:#9ca3af;" id="dd-email"></div>
@@ -651,6 +652,12 @@
 
   const firebaseConfig = window.FIREBASE_CONFIG;
 
+  if (!firebaseConfig) {
+    console.error('Firebase config not found. Ensure firebase-config.js is loaded and exposes window.FIREBASE_CONFIG.');
+    document.getElementById('avatar-initials').textContent = '?';
+    throw new Error('Missing Firebase configuration — aborting auth setup.');
+  }
+
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
@@ -675,14 +682,16 @@
     document.getElementById('dd-name').textContent = name;
     document.getElementById('dd-email').textContent = user.email;
 
-    // Avatar
+    // Avatar — always set initials first as a safe fallback
     const initials = name.split(' ').map(p=>p[0]).join('').toUpperCase().slice(0,2);
+    document.getElementById('avatar-initials').textContent = initials;
     if (user.photoURL) {
-      document.getElementById('avatar-img').src = user.photoURL;
-      document.getElementById('avatar-img').style.display = 'block';
-      document.getElementById('avatar-initials').style.display = 'none';
-    } else {
-      document.getElementById('avatar-initials').textContent = initials;
+      const avatarImg = document.getElementById('avatar-img');
+      avatarImg.onload = () => {
+        avatarImg.style.display = 'block';
+        document.getElementById('avatar-initials').style.display = 'none';
+      };
+      avatarImg.src = user.photoURL; // set src after onload is registered
     }
 
     // Stats
