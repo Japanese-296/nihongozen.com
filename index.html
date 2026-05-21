@@ -688,7 +688,45 @@ main { flex:1; padding:2rem; overflow-x:hidden; max-width:100%; }
   }
   #translate-status.show { opacity:1; }
 
-  </style>
+  
+/* ══ VOCAB SEARCH BAR ══ */
+.vocab-search-bar {
+  display:flex; align-items:center; gap:.55rem;
+  margin-bottom:1rem; flex-wrap:wrap;
+}
+.vocab-search-inner {
+  position:relative; flex:1; min-width:180px; max-width:400px;
+}
+.vocab-search-inner input {
+  width:100%; padding:.48rem 2.4rem .48rem 2.1rem;
+  font-size:.82rem; font-family:'DM Sans',sans-serif;
+  border:1.5px solid var(--l-border); border-radius:30px;
+  background:#fff; color:var(--l-text); outline:none;
+  transition:border-color .2s, box-shadow .2s;
+}
+.vocab-search-inner input:focus {
+  border-color:var(--l-pink-mid);
+  box-shadow:0 0 0 3px rgba(212,83,126,.10);
+}
+.vocab-search-inner input::placeholder { color:var(--l-text3); }
+.vsrch-icon {
+  position:absolute; left:.68rem; top:50%; transform:translateY(-50%);
+  font-size:.8rem; pointer-events:none; color:var(--l-text3);
+}
+.vsrch-clear {
+  position:absolute; right:.6rem; top:50%; transform:translateY(-50%);
+  background:none; border:none; cursor:pointer; font-size:.78rem;
+  color:var(--l-text3); padding:.2rem .3rem; border-radius:50%;
+  display:none; align-items:center; justify-content:center; transition:all .15s;
+}
+.vsrch-clear.show { display:flex; }
+.vsrch-clear:hover { background:var(--l-pink-light); color:var(--l-pink); }
+.vocab-result-count {
+  font-size:.75rem; color:var(--l-text3); padding:.3rem .6rem;
+  background:var(--l-bg3); border-radius:20px; display:none;
+}
+.vocab-result-count.show { display:inline-block; }
+</style>
 </head>
 <body>
 
@@ -995,6 +1033,15 @@ main { flex:1; padding:2rem; overflow-x:hidden; max-width:100%; }
     <!-- VOCABULARY -->
     <div id="sec-learn-vocab" class="zen-section learn-section">
       <p class="l-section-title">Vocabulary</p>
+      <p class="l-section-sub">Browse by category or search across all words in Japanese, romaji, or English.</p>
+      <div class="vocab-search-bar">
+        <div class="vocab-search-inner">
+          <span class="vsrch-icon">&#128269;</span>
+          <input type="text" id="vocab-search-input" placeholder="Search word, romaji, or meaning&#8230;" autocomplete="off"/>
+          <button class="vsrch-clear" id="vocab-search-clear" title="Clear">&#10005;</button>
+        </div>
+        <span class="vocab-result-count" id="vocab-result-count"></span>
+      </div>
       <div class="l-tab-row" id="vocab-tabs"></div>
       <div id="vocab-list"></div>
     </div>
@@ -7624,6 +7671,86 @@ function switchVocab(topic,btn){
   }).join('');
 }
 switchVocab('greetings',vocabTabsEl.querySelector('.l-tab-btn'));
+
+// ── VOCAB INSTANT SEARCH ─────────────────────────────────────────────
+(function(){
+  var vsInput  = document.getElementById('vocab-search-input');
+  var vsClear  = document.getElementById('vocab-search-clear');
+  var vsCount  = document.getElementById('vocab-result-count');
+  var vsTimer  = null;
+  var vsActive = false;
+
+  // Build flat list once
+  var allVocabFlat = [];
+  Object.keys(vocabData).forEach(function(cat){
+    vocabData[cat].forEach(function(v){
+      allVocabFlat.push({jp:v.jp, r:v.r, en:v.en, cat:v.cat, _cat:cat});
+    });
+  });
+
+  function escH(s){ return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+
+  function renderVocabCards(items){
+    if(!items.length){
+      document.getElementById('vocab-list').innerHTML =
+        '<div style="text-align:center;padding:2.5rem;color:var(--l-text3)">'+
+          '<div style="font-size:2rem;margin-bottom:.5rem">&#128269;</div>'+
+          '<p>No words found. Try a different keyword.</p>'+
+        '</div>';
+      return;
+    }
+    document.getElementById('vocab-list').innerHTML = items.map(function(v){
+      return '<div class="l-vocab-card">'+
+        '<div><div class="l-vocab-jp">'+escH(v.jp)+'</div>'+
+        '<div class="l-vocab-rom">'+escH(v.r)+'</div></div>'+
+        '<div class="l-vocab-en">'+
+          '<div class="meaning">'+escH(v.en)+'</div>'+
+          '<div class="cat">'+escH(v.cat)+'</div>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+  }
+
+  function doVocabSearch(q){
+    q = q.trim().toLowerCase();
+    if(!q){ clearVocabSearch(); return; }
+    vsActive = true;
+    // Deactivate category tabs visually
+    document.querySelectorAll('#vocab-tabs .l-tab-btn').forEach(function(b){ b.classList.remove('active'); });
+    var results = allVocabFlat.filter(function(v){
+      return v.jp.includes(q) ||
+             v.r.toLowerCase().includes(q) ||
+             v.en.toLowerCase().includes(q) ||
+             v.cat.toLowerCase().includes(q) ||
+             (vocabLabels[v._cat]||'').toLowerCase().includes(q);
+    });
+    vsCount.textContent = results.length + ' result' + (results.length !== 1 ? 's' : '');
+    vsCount.classList.add('show');
+    renderVocabCards(results);
+  }
+
+  function clearVocabSearch(){
+    vsActive = false;
+    vsInput.value = '';
+    vsClear.classList.remove('show');
+    vsCount.classList.remove('show');
+    // Restore active tab
+    var activeBtn = document.querySelector('#vocab-tabs .l-tab-btn') || vocabTabsEl.querySelector('.l-tab-btn');
+    if(activeBtn){ activeBtn.classList.add('active'); switchVocab(activeBtn.dataset && activeBtn.dataset.cat || Object.keys(vocabData)[0], activeBtn); }
+    else switchVocab(Object.keys(vocabData)[0], vocabTabsEl.querySelector('.l-tab-btn'));
+  }
+
+  vsInput.addEventListener('input', function(){
+    var q = this.value;
+    if(q) vsClear.classList.add('show'); else vsClear.classList.remove('show');
+    clearTimeout(vsTimer);
+    vsTimer = setTimeout(function(){ doVocabSearch(q); }, 120);
+  });
+  vsInput.addEventListener('keydown', function(e){
+    if(e.key === 'Escape') clearVocabSearch();
+  });
+  vsClear.addEventListener('click', clearVocabSearch);
+})();
 
 // ══ QUIZ ═════════════════════════════════════════════════════════════
 var qLevel='n5',qType='hiragana',qScore=0,qStreak=0,qTotal=0,qCurrent=null,qLocked=false;
