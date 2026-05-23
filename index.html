@@ -1,9 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" translate="no">
 <head>
   <meta charset="UTF-8"/>
+  <meta name="google" content="notranslate"/>
+  <meta name="google-translate-customization" content="no"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>NihongoZen</title>
+  <title>NihongoZen — Learn Japanese</title>
   <link rel="icon" href="https://files.catbox.moe/fxwgtd.png"/>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
@@ -30,15 +32,19 @@
 html { scroll-behavior:smooth; }
 body {
   font-family:'DM Sans',sans-serif;
-  background:var(--white); color:var(--ink);
+  color:var(--ink);
   min-height:100vh; overflow-x:hidden;
+  /* Cherry Blossom — sakura pink, same warmth as AI chat */
+  background: #fce8f2;
 }
-body::before {
-  content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
-  background:
-    radial-gradient(ellipse 900px 700px at 5% 15%,rgba(242,167,184,.15) 0%,transparent 55%),
-    radial-gradient(ellipse 700px 600px at 95% 85%,rgba(167,139,250,.08) 0%,transparent 55%),
-    radial-gradient(ellipse 500px 500px at 50% 50%,rgba(253,232,239,.07) 0%,transparent 65%);
+@media(min-width:768px){
+  body {
+    background:
+      radial-gradient(ellipse 1800px 1200px at -5%  -5%,  #f9c8df 0%, #fce0ee 35%, #fdf0f8 65%, transparent 80%),
+      radial-gradient(ellipse 1600px 1100px at 105% 105%, #f8c4dc 0%, #fcdcea 35%, #fef0f6 65%, transparent 80%),
+      radial-gradient(ellipse 1200px  800px at  50%  50%, #fde8f3 0%, transparent 70%),
+      #fce8f2;
+  }
 }
 body > * { position:relative; z-index:1; }
 
@@ -58,22 +64,29 @@ header {
   position:sticky; top:0; z-index:200;
   background:rgba(255,250,249,.95); backdrop-filter:blur(20px) saturate(180%);
   border-bottom:1px solid var(--border);
-  padding:0 1.75rem; display:flex; align-items:center; gap:1rem; height:64px;
+  padding:0 1.25rem; display:flex; align-items:center; gap:.75rem; height:58px;
   box-shadow:0 1px 12px rgba(242,167,184,.08);
 }
-.header-logo { display:flex; align-items:center; gap:.65rem; text-decoration:none; flex-shrink:0; cursor:pointer; }
-.header-logo img { width:34px; height:34px; border-radius:9px; box-shadow:0 2px 8px rgba(242,167,184,.3); }
-.header-logo span { font-family:'Noto Serif JP',serif; font-size:1.05rem; font-weight:700; color:var(--ink); letter-spacing:-.01em; }
-nav { display:flex; gap:.15rem; flex:1; overflow-x:auto; scrollbar-width:none; padding-left:.75rem; }
+.header-logo { display:flex; align-items:center; gap:.55rem; text-decoration:none; flex-shrink:0; cursor:pointer; }
+.header-logo img { width:32px; height:32px; border-radius:8px; box-shadow:0 2px 8px rgba(242,167,184,.3); }
+.header-logo span { font-family:'Noto Serif JP',serif; font-size:1rem; font-weight:700; color:var(--ink); letter-spacing:-.01em; }
+nav { display:flex; gap:.1rem; flex:1; overflow-x:auto; scrollbar-width:none; padding-left:.5rem; }
 nav::-webkit-scrollbar { display:none; }
 nav a {
-  padding:.4rem .9rem; border-radius:9px; font-size:.83rem;
+  padding:.35rem .75rem; border-radius:8px; font-size:.8rem;
   font-weight:500; color:var(--ink-light); text-decoration:none;
   white-space:nowrap; transition:background .18s,color .18s; cursor:pointer; display:block;
 }
 nav a:hover, nav a.active { background:var(--sakura-light); color:var(--ink); }
 nav a.active { font-weight:600; }
-.header-right { display:flex; align-items:center; gap:.5rem; margin-left:auto; flex-shrink:0; }
+/* Mobile: hide desktop nav, hide streak/xp text labels */
+@media(max-width:900px){
+  nav { display:none; }
+  .streak-badge, .xp-badge { display:none; }
+  header { padding:0 1rem; height:54px; }
+  .header-logo span { font-size:.92rem; }
+}
+.header-right { display:flex; align-items:center; gap:.4rem; margin-left:auto; flex-shrink:0; }
 .streak-badge, .xp-badge {
   display:flex; align-items:center; gap:.35rem;
   padding:.3rem .7rem; border-radius:20px; font-size:.77rem; font-weight:600; white-space:nowrap;
@@ -536,22 +549,63 @@ main { flex:1; padding:2rem; overflow-x:hidden; max-width:100%; }
 
   /* ── USER PROFILE IN HEADER ── */
   .user-profile-badge {
-    display:flex; align-items:center; gap:.45rem;
-    background:var(--sakura-light); border:1px solid var(--sakura-mid);
-    padding:.28rem .75rem .28rem .38rem; border-radius:20px;
-    font-size:.78rem; font-weight:600; color:var(--ink);
-    white-space:nowrap; cursor:default; max-width:130px; overflow:hidden;
-    transition:background .2s;
+    display:flex; align-items:center; gap:.42rem;
+    background:var(--sakura-light); border:1.5px solid var(--sakura-mid);
+    padding:.22rem .6rem .22rem .22rem; border-radius:24px;
+    font-size:.77rem; font-weight:600; color:var(--ink);
+    white-space:nowrap; cursor:pointer; position:relative;
+    transition:all .2s; user-select:none; flex-shrink:0;
   }
-  .user-profile-badge:hover { background:var(--sakura-mid); }
+  .user-profile-badge:hover { background:var(--sakura-mid); border-color:var(--sakura); }
   .user-avatar-circle {
-    width:24px; height:24px; border-radius:50%; background:var(--sakura);
+    width:30px; height:30px; border-radius:50%; background:var(--sakura);
     display:flex; align-items:center; justify-content:center;
-    color:#fff; font-size:.7rem; font-weight:700; flex-shrink:0;
+    color:#fff; font-size:.72rem; font-weight:700; flex-shrink:0;
+    overflow:hidden; border:2px solid rgba(255,255,255,.7);
+    box-shadow:0 2px 6px rgba(242,167,184,.4);
+  }
+  .user-avatar-circle img {
+    width:100%; height:100%; object-fit:cover; border-radius:50%; display:block;
   }
   .user-profile-name {
-    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:88px;
   }
+  @media(max-width:900px){ .user-profile-name { display:none; } }
+  .upb-chevron { width:10px; opacity:.55; transition:transform .2s; margin-left:1px; flex-shrink:0; }
+  .user-profile-badge.open .upb-chevron { transform:rotate(180deg); }
+  /* Profile dropdown */
+  .profile-dropdown {
+    position:absolute; top:calc(100% + 10px); right:0;
+    min-width:210px; background:#fff; border-radius:16px;
+    padding:.65rem; box-shadow:0 8px 32px rgba(26,26,46,.14);
+    border:1px solid var(--border);
+    opacity:0; pointer-events:none; transform:translateY(-8px) scale(.97);
+    transition:all .22s cubic-bezier(.34,1.26,.64,1); z-index:500;
+  }
+  .profile-dropdown.open { opacity:1; pointer-events:auto; transform:translateY(0) scale(1); }
+  .pd-head {
+    display:flex; align-items:center; gap:.6rem;
+    padding:.4rem .3rem .7rem; border-bottom:1px solid var(--border); margin-bottom:.45rem;
+  }
+  .pd-ava {
+    width:40px; height:40px; border-radius:50%; flex-shrink:0;
+    background:var(--sakura); display:flex; align-items:center; justify-content:center;
+    color:#fff; font-size:.95rem; font-weight:700; overflow:hidden;
+    border:2px solid var(--sakura-mid);
+  }
+  .pd-ava img { width:100%; height:100%; object-fit:cover; display:block; border-radius:50%; }
+  .pd-uname { font-size:.83rem; font-weight:700; color:var(--ink); overflow:hidden; text-overflow:ellipsis; max-width:130px; }
+  .pd-email { font-size:.7rem; color:var(--ink-light); margin-top:1px; overflow:hidden; text-overflow:ellipsis; max-width:130px; }
+  .pd-item {
+    display:flex; align-items:center; gap:.55rem; padding:.5rem .55rem;
+    border-radius:9px; font-size:.8rem; font-weight:500; color:var(--ink);
+    cursor:pointer; transition:background .15s; width:100%; border:none; background:none;
+    font-family:inherit; text-align:left;
+  }
+  .pd-item:hover { background:var(--sakura-light); }
+  .pd-item.danger { color:#dc2626; }
+  .pd-item.danger:hover { background:#fef2f2; }
+  .pd-item .pd-ico { font-size:14px; width:18px; text-align:center; }
 
   /* ── JLPT LEVEL SECTIONS ── */
   .jlpt-hero {
@@ -726,6 +780,246 @@ main { flex:1; padding:2rem; overflow-x:hidden; max-width:100%; }
   background:var(--l-bg3); border-radius:20px; display:none;
 }
 .vocab-result-count.show { display:inline-block; }
+
+  /* ══ PRACTICE TEST (KanjiPath style) ══ */
+  .pt-level-tab {
+    flex:1; min-width:48px; padding:8px 14px; font-size:12px;
+    letter-spacing:1.5px; text-transform:uppercase;
+    cursor:pointer; border:none; background:transparent;
+    color:var(--l-text2); font-family:'DM Sans',sans-serif;
+    transition:background .15s,color .15s; white-space:nowrap;
+    border-right:1px solid var(--l-border);
+  }
+  .pt-level-tab:last-child { border-right:none; }
+  .pt-level-tab:hover { background:var(--l-bg3); color:var(--ink); }
+  .pt-level-tab.active { background:var(--ink); color:#fff; }
+
+  .pt-quiz-row { transition:background .15s; cursor:pointer; }
+  .pt-quiz-row:hover td { background:var(--sakura-light); }
+  .pt-quiz-row td {
+    padding:10px 14px; font-size:13px;
+    border-bottom:1px solid var(--l-border); vertical-align:middle;
+  }
+  .pt-quiz-row:last-child td { border-bottom:none; }
+  .pt-score-bar {
+    height:4px; background:var(--l-bg3); border-radius:2px;
+    width:70px; position:relative; display:inline-block;
+    margin-right:7px; vertical-align:middle;
+  }
+  .pt-score-fill {
+    position:absolute; left:0; top:0; bottom:0;
+    border-radius:2px; background:var(--l-pink);
+  }
+  .pt-try-btn {
+    display:inline-block; padding:5px 14px; font-size:11px;
+    letter-spacing:1.5px; text-transform:uppercase;
+    background:var(--ink); color:#fff; border:none;
+    cursor:pointer; border-radius:var(--l-radius-sm);
+    font-family:'DM Sans',sans-serif; transition:background .15s;
+  }
+  .pt-try-btn:hover { background:var(--l-pink); }
+  .pt-try-btn.done { background:var(--l-green); }
+  .pt-current-badge {
+    font-size:9px; background:var(--l-pink); color:#fff;
+    padding:2px 6px; border-radius:4px;
+    margin-left:6px; vertical-align:middle; letter-spacing:.5px;
+  }
+
+  /* Results review */
+  .pt-review-item {
+    background:#fff; border:1px solid var(--l-border);
+    border-radius:var(--l-radius); padding:.75rem 1rem;
+    margin-bottom:.5rem; font-size:13px;
+  }
+  .pt-review-item.correct-r { border-color:var(--l-green); background:var(--l-green-light); }
+  .pt-review-item.wrong-r   { border-color:#E24B4A; background:var(--l-red-light); }
+  .pt-review-q { font-family:'Noto Sans JP',sans-serif; font-size:1.3rem; margin-bottom:.3rem; }
+  .pt-review-ans { font-size:12px; }
+
+/* ═══════════════════════════════════════════
+   SENSEI AI CHAT — NihongoZen Pro
+═══════════════════════════════════════════ */
+.ai-fab {
+  position:fixed; bottom:24px; right:20px; z-index:500;
+  width:58px; height:58px; border-radius:50%;
+  background:linear-gradient(135deg,#e91e8c,#c2185b);
+  color:#fff; border:none; cursor:grab;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:2px; box-shadow:0 4px 20px rgba(194,24,91,.45);
+  transition:box-shadow .2s, transform .15s;
+  font-family:'DM Sans',sans-serif;
+  touch-action:none; user-select:none; -webkit-user-select:none;
+}
+.ai-fab:hover { box-shadow:0 6px 28px rgba(194,24,91,.55); }
+.ai-fab.dragging { cursor:grabbing; transform:scale(1.12); box-shadow:0 10px 36px rgba(194,24,91,.55); transition:box-shadow .2s; }
+.ai-fab-icon { font-size:22px; line-height:1; }
+.ai-fab-txt  { font-size:8px; font-weight:700; letter-spacing:.04em; opacity:.92; }
+.ai-fab-pulse {
+  position:absolute; inset:-4px; border-radius:50%;
+  border:2px solid rgba(233,30,140,.4);
+  animation:aiFabPulse 2.4s ease-in-out infinite;
+}
+@keyframes aiFabPulse {
+  0%,100% { transform:scale(1);   opacity:.6; }
+  50%      { transform:scale(1.18); opacity:0;  }
+}
+
+.ai-overlay {
+  position:fixed; inset:0; z-index:600;
+  background:rgba(26,26,46,.45); backdrop-filter:blur(6px);
+  display:flex; align-items:flex-end; justify-content:center;
+  opacity:0; pointer-events:none;
+  transition:opacity .28s;
+}
+.ai-overlay.open { opacity:1; pointer-events:auto; }
+
+.ai-panel {
+  width:100%; max-width:500px; height:90vh;
+  background:var(--white); border-radius:22px 22px 0 0;
+  display:flex; flex-direction:column; overflow:hidden;
+  box-shadow:0 -8px 48px rgba(26,26,46,.18);
+  transform:translateY(100%);
+  transition:transform .35s cubic-bezier(.34,1.36,.64,1);
+}
+.ai-overlay.open .ai-panel { transform:translateY(0); }
+
+/* Header */
+.ai-head {
+  background:linear-gradient(135deg,#c2185b 0%,#e91e8c 60%,#f06292 100%);
+  padding:16px 18px 14px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.ai-head-left  { display:flex; align-items:center; gap:11px; }
+.ai-head-ava   {
+  width:40px; height:40px; border-radius:50%;
+  background:rgba(255,255,255,.22); border:2px solid rgba(255,255,255,.4);
+  display:flex; align-items:center; justify-content:center; font-size:20px;
+}
+.ai-head-name  { color:#fff; font-weight:700; font-size:15px; font-family:'DM Sans',sans-serif; }
+.ai-head-sub   { color:rgba(255,255,255,.8); font-size:11px; margin-top:1px; }
+.ai-head-right { display:flex; align-items:center; gap:9px; }
+.ai-xp-pill {
+  background:rgba(255,255,255,.2); border:1px solid rgba(255,255,255,.35);
+  color:#fff; border-radius:20px; padding:4px 11px;
+  font-size:12px; font-weight:700; font-family:'DM Sans',sans-serif;
+}
+.ai-close {
+  width:32px; height:32px; border-radius:50%;
+  background:rgba(255,255,255,.2); border:none; cursor:pointer;
+  color:#fff; font-size:16px; font-weight:700;
+  display:flex; align-items:center; justify-content:center;
+  transition:background .2s;
+}
+.ai-close:hover { background:rgba(255,255,255,.35); }
+
+/* Mode tabs */
+.ai-modes {
+  display:flex; background:rgba(255,250,249,.96);
+  border-bottom:1px solid var(--border); flex-shrink:0;
+}
+.ai-mode-btn {
+  flex:1; padding:10px 2px; border:none; background:transparent;
+  cursor:pointer; text-align:center; transition:background .18s;
+  display:flex; flex-direction:column; align-items:center; gap:2px;
+  position:relative;
+}
+.ai-mode-btn .m-ico { font-size:17px; line-height:1; }
+.ai-mode-btn .m-lbl { font-size:9px; font-family:'DM Sans',sans-serif; color:var(--ink-light); font-weight:500; }
+.ai-mode-btn.active { background:#fff; }
+.ai-mode-btn.active::after {
+  content:''; position:absolute; bottom:0; left:18%; right:18%;
+  height:2.5px; background:var(--sakura); border-radius:2px 2px 0 0;
+}
+.ai-mode-btn:hover:not(.active) { background:var(--sakura-light); }
+
+/* Messages */
+.ai-msgs {
+  flex:1; overflow-y:auto; padding:14px 13px;
+  display:flex; flex-direction:column; gap:11px;
+  scroll-behavior:smooth;
+}
+.ai-msgs::-webkit-scrollbar { width:4px; }
+.ai-msgs::-webkit-scrollbar-thumb { background:var(--sakura-mid); border-radius:2px; }
+
+.ai-msg-row { display:flex; align-items:flex-end; gap:8px; }
+.ai-msg-row.u { flex-direction:row-reverse; }
+
+.ai-msg-ava {
+  width:28px; height:28px; border-radius:50%; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:14px;
+  background:var(--sakura-light); border:2px solid #fff;
+  box-shadow:0 2px 8px rgba(242,167,184,.3);
+}
+.ai-msg-row.u .ai-msg-ava { background:linear-gradient(135deg,#c2185b,#e91e8c); }
+
+.ai-bubble {
+  max-width:80%; padding:10px 14px; border-radius:18px;
+  font-size:13.5px; line-height:1.68; white-space:pre-wrap; word-break:break-word;
+  font-family:'DM Sans',sans-serif;
+}
+.ai-msg-row:not(.u) .ai-bubble {
+  background:#fff; color:var(--ink);
+  border:1.5px solid var(--border); border-bottom-left-radius:4px;
+  box-shadow:var(--shadow-sm);
+}
+.ai-msg-row.u .ai-bubble {
+  background:linear-gradient(135deg,#e91e8c,#c2185b);
+  color:#fff; border-bottom-right-radius:4px;
+  box-shadow:0 4px 14px rgba(194,24,91,.3);
+}
+
+/* Typing indicator */
+.ai-typing {
+  background:#fff; border:1.5px solid var(--border);
+  border-radius:18px; border-bottom-left-radius:4px;
+  padding:13px 17px; display:flex; gap:5px; align-items:center;
+  box-shadow:var(--shadow-sm);
+}
+.ai-tdot {
+  width:7px; height:7px; border-radius:50%; background:var(--sakura);
+  animation:aiDotBounce 1.2s infinite;
+}
+.ai-tdot:nth-child(2) { animation-delay:.2s; }
+.ai-tdot:nth-child(3) { animation-delay:.4s; }
+@keyframes aiDotBounce {
+  0%,60%,100% { transform:translateY(0); opacity:.5; }
+  30%          { transform:translateY(-7px); opacity:1; }
+}
+
+/* System divider */
+.ai-sys-msg {
+  text-align:center; font-size:11px; color:var(--sakura);
+  font-family:'DM Sans',sans-serif; padding:2px 0; letter-spacing:.01em;
+}
+
+/* Input area */
+.ai-hint {
+  text-align:center; font-size:11px; color:var(--ink-light);
+  padding:6px 14px 0; flex-shrink:0; font-family:'DM Sans',sans-serif;
+  background:var(--white);
+}
+.ai-input-row {
+  display:flex; gap:9px; padding:10px 13px 16px;
+  background:var(--white); border-top:1px solid var(--border); flex-shrink:0;
+}
+.ai-inp {
+  flex:1; padding:11px 16px; border-radius:24px;
+  border:1.5px solid var(--border); background:#fff;
+  font-family:'DM Sans',sans-serif; font-size:14px; color:var(--ink);
+  outline:none; transition:border-color .2s;
+}
+.ai-inp:focus { border-color:var(--sakura); }
+.ai-inp::placeholder { color:var(--ink-light); opacity:.65; }
+.ai-send {
+  width:46px; height:46px; border-radius:50%; flex-shrink:0;
+  background:linear-gradient(135deg,#e91e8c,#c2185b);
+  color:#fff; border:none; cursor:pointer; font-size:14px; font-weight:700;
+  font-family:'Noto Serif JP',serif;
+  box-shadow:0 4px 14px rgba(194,24,91,.38);
+  transition:transform .15s,box-shadow .15s;
+}
+.ai-send:hover  { transform:scale(1.08); }
+.ai-send:disabled { opacity:.45; transform:none; cursor:not-allowed; }
 </style>
 </head>
 <body>
@@ -789,9 +1083,39 @@ main { flex:1; padding:2rem; overflow-x:hidden; max-width:100%; }
   <div class="header-right">
     <div class="streak-badge">&#128293; <span>7</span> day streak</div>
     <div class="xp-badge">&#11088; <span>240</span> XP</div>
-    <div class="user-profile-badge" id="user-profile-badge" style="display:none">
-      <div class="user-avatar-circle" id="user-avatar-initial">U</div>
+    <a id="header-login-btn" href="login.html" style="
+      display:flex; align-items:center; gap:6px; padding:6px 14px;
+      background:linear-gradient(135deg,#e91e8c,#c2185b); color:#fff;
+      border-radius:22px; font-size:13px; font-weight:700;
+      text-decoration:none; box-shadow:0 3px 12px rgba(194,24,91,.35);
+      transition:all .2s; flex-shrink:0;
+    " title="Login with Google">🔑 Login</a>
+
+    <div class="user-profile-badge" id="user-profile-badge" style="display:none" onclick="toggleProfileDd(event)">
+      <div class="user-avatar-circle" id="user-avatar-circle">
+        <img id="user-avatar-img" src="" alt="" crossorigin="anonymous" referrerpolicy="no-referrer" style="display:none" onerror="this.style.display='none';document.getElementById('user-avatar-letter').style.display=''"/>
+        <span id="user-avatar-letter">U</span>
+      </div>
       <span class="user-profile-name" id="user-profile-name">User</span>
+      <svg class="upb-chevron" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div class="profile-dropdown" id="profileDropdown" onclick="event.stopPropagation()">
+        <div class="pd-head">
+          <div class="pd-ava" id="pd-ava">
+            <img id="pd-ava-img" src="" alt="" crossorigin="anonymous" referrerpolicy="no-referrer" style="display:none" onerror="this.style.display='none';document.getElementById('pd-ava-letter').style.display=''"/>
+            <span id="pd-ava-letter">U</span>
+          </div>
+          <div>
+            <div class="pd-uname" id="pd-uname">User</div>
+            <div class="pd-email" id="pd-email">—</div>
+          </div>
+        </div>
+        <button class="pd-item" onclick="showSection('home');toggleProfileDd()">
+          <span class="pd-ico">🏠</span> Dashboard
+        </button>
+        <button class="pd-item danger" onclick="nzSignOut()">
+          <span class="pd-ico">🚪</span> Sign Out
+        </button>
+      </div>
     </div>
   </div>
 </header>
@@ -810,6 +1134,7 @@ main { flex:1; padding:2rem; overflow-x:hidden; max-width:100%; }
     <a class="sidebar-link" data-section="learn-listening"><span class="icon">&#127911;</span> Listening</a>
     <a class="sidebar-link" data-section="learn-vocab"><span class="icon">&#128292;</span> Vocabulary</a>
     <a class="sidebar-link" data-section="learn-quiz"><span class="icon">&#129504;</span> Quiz</a>
+    <a class="sidebar-link" data-section="jlpt-practice"><span class="icon">🎌</span> JLPT Practice <span class="badge" style="background:var(--l-red)">Full</span></a>
     <div class="sidebar-section">JLPT</div>
     <a class="sidebar-link" data-section="n5"><span class="icon">&#127800;</span> N5 &#8211; Beginner</a>
     <a class="sidebar-link" data-section="n4"><span class="icon">&#127799;</span> N4 &#8211; Elementary</a>
@@ -888,6 +1213,7 @@ main { flex:1; padding:2rem; overflow-x:hidden; max-width:100%; }
         <div class="l-hero-btns">
           <button class="l-btn-primary" data-section="learn-lessons">Start Learning &#8599;</button>
           <button class="l-btn-outline" data-section="learn-quiz">Take a Quiz</button>
+          <button class="l-btn-outline" style="border-color:#dc2626;color:#dc2626;" onclick="showSection('jlpt-practice')">🎌 JLPT Practice</button>
           <button class="l-btn-outline" data-section="learn-kanji">Browse Kanji</button>
         </div>
       </div>
@@ -907,6 +1233,7 @@ main { flex:1; padding:2rem; overflow-x:hidden; max-width:100%; }
         <div class="l-card" data-section="learn-reading"><div class="l-card-emoji">&#128218;</div><span class="l-badge blue">Reading</span><h3>Reading Practice</h3><p>Passages with furigana and comprehension questions.</p></div>
         <div class="l-card" data-section="learn-listening"><div class="l-card-emoji">&#127911;</div><span class="l-badge pink">Listening</span><h3>Listening Practice</h3><p>Real dialogues with scripts and audio player.</p></div>
         <div class="l-card" data-section="learn-quiz"><div class="l-card-emoji">&#129504;</div><span class="l-badge amber">Practice</span><h3>Interactive Quiz</h3><p>Test kana, kanji and vocab across all JLPT levels.</p></div>
+        <div class="l-card jlpt-practice-card" onclick="showSection('jlpt-practice')" style="cursor:pointer;"><div class="l-card-emoji">🎌</div><span class="l-badge" style="background:#dc2626;color:#fff">Full Exam</span><h3>JLPT Practice Test</h3><p>Full N5–N1 exam simulation with timer, scoring and review.</p></div>
       </div>
       <p class="l-section-title">JLPT Level Guide</p>
       <div class="l-jlpt-guide">
@@ -1048,27 +1375,361 @@ main { flex:1; padding:2rem; overflow-x:hidden; max-width:100%; }
 
     <!-- QUIZ -->
     <div id="sec-learn-quiz" class="zen-section learn-section">
-      <p class="l-section-title">Interactive Quiz</p>
-      <div style="background:#fff;border:1px solid var(--l-border);border-radius:var(--l-radius);padding:1.1rem;margin-bottom:1.2rem">
-        <div class="l-quiz-label">Select Level</div>
-        <div class="l-level-selector" id="level-btns"></div>
-        <div class="l-quiz-label" style="margin-top:.75rem">Quiz Type</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap" id="type-btns"></div>
+
+      <!-- ── QUIZ MODE TABS ── -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.75rem">
+        <p class="l-section-title" style="margin-bottom:0">🎯 Practice Quiz</p>
+        <div style="display:flex;gap:6px;flex-wrap:wrap" id="quiz-mode-tabs">
+          <button class="l-quiz-type-btn active" data-mode="quick" onclick="switchQuizMode('quick',this)">⚡ Quick Quiz</button>
+          <button class="l-quiz-type-btn" data-mode="practice" onclick="switchQuizMode('practice',this)">📋 Practice Test</button>
+        </div>
       </div>
-      <div class="l-stat-row">
-        <div class="l-stat"><div class="num" id="q-score" style="color:var(--l-pink)">0</div><div class="lbl">Score</div></div>
-        <div class="l-stat"><div class="num" id="q-streak" style="color:var(--l-green)">0</div><div class="lbl">Streak &#128293;</div></div>
-        <div class="l-stat"><div class="num" id="q-total" style="color:var(--l-blue)">0</div><div class="lbl">Answered</div></div>
-        <div class="l-stat"><div class="num" id="q-acc" style="color:var(--l-amber)">&#8212;</div><div class="lbl">Accuracy</div></div>
+
+      <!-- ══ QUICK QUIZ MODE (original) ══ -->
+      <div id="qm-quick">
+        <div style="background:#fff;border:1px solid var(--l-border);border-radius:var(--l-radius);padding:1.1rem;margin-bottom:1.2rem">
+          <div class="l-quiz-label">Select Level</div>
+          <div class="l-level-selector" id="level-btns"></div>
+          <div class="l-quiz-label" style="margin-top:.75rem">Quiz Type</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap" id="type-btns"></div>
+        </div>
+        <div class="l-stat-row">
+          <div class="l-stat"><div class="num" id="q-score" style="color:var(--l-pink)">0</div><div class="lbl">Score</div></div>
+          <div class="l-stat"><div class="num" id="q-streak" style="color:var(--l-green)">0</div><div class="lbl">Streak 🔥</div></div>
+          <div class="l-stat"><div class="num" id="q-total" style="color:var(--l-blue)">0</div><div class="lbl">Answered</div></div>
+          <div class="l-stat"><div class="num" id="q-acc" style="color:var(--l-amber)">—</div><div class="lbl">Accuracy</div></div>
+        </div>
+        <div class="l-quiz-box">
+          <div class="l-quiz-label" id="quiz-hint">What is the romaji for:</div>
+          <div class="l-quiz-q" id="quiz-char">あ</div>
+          <div style="font-size:12px;color:var(--l-text3);margin-top:.3rem;font-style:italic" id="quiz-sub"></div>
+        </div>
+        <div class="l-quiz-opts" id="quiz-opts"></div>
+        <div class="l-quiz-feedback" id="quiz-feedback"></div>
       </div>
-      <div class="l-quiz-box">
-        <div class="l-quiz-label" id="quiz-hint">What is the romaji for:</div>
-        <div class="l-quiz-q" id="quiz-char">&#12354;</div>
-        <div style="font-size:12px;color:var(--l-text3);margin-top:.3rem;font-style:italic" id="quiz-sub"></div>
-      </div>
-      <div class="l-quiz-opts" id="quiz-opts"></div>
-      <div class="l-quiz-feedback" id="quiz-feedback"></div>
-    </div>
+
+      <!-- ══ PRACTICE TEST MODE (KanjiPath-style) ══ -->
+      <div id="qm-practice" style="display:none">
+
+        <!-- LOBBY — quiz list view -->
+        <div id="pt-lobby">
+          <!-- Header stats -->
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px;margin-bottom:1.5rem">
+            <div class="l-stat"><div class="num" id="pt-stat-done" style="color:var(--l-pink)">0</div><div class="lbl">Quizzes Done</div></div>
+            <div class="l-stat"><div class="num" id="pt-stat-perfect" style="color:var(--l-green)">0</div><div class="lbl">Perfect Scores</div></div>
+            <div class="l-stat"><div class="num" id="pt-stat-streak" style="color:var(--l-amber)">0🔥</div><div class="lbl">Best Streak</div></div>
+            <div class="l-stat"><div class="num" id="pt-stat-acc" style="color:var(--l-blue)">—</div><div class="lbl">Overall Acc.</div></div>
+          </div>
+
+          <!-- Level filter tabs -->
+          <div style="display:flex;gap:0;margin-bottom:1.2rem;border:1px solid var(--l-border);border-radius:var(--l-radius);overflow:hidden;flex-wrap:wrap" id="pt-level-tabs">
+            <button class="pt-level-tab active" data-lv="N5" onclick="ptFilterLevel('N5',this)">N5</button>
+            <button class="pt-level-tab" data-lv="N4" onclick="ptFilterLevel('N4',this)">N4</button>
+            <button class="pt-level-tab" data-lv="N3" onclick="ptFilterLevel('N3',this)">N3</button>
+            <button class="pt-level-tab" data-lv="N2" onclick="ptFilterLevel('N2',this)">N2</button>
+            <button class="pt-level-tab" data-lv="N1" onclick="ptFilterLevel('N1',this)">N1</button>
+            <button class="pt-level-tab" data-lv="all" onclick="ptFilterLevel('all',this)">All</button>
+          </div>
+
+          <!-- Quiz list table -->
+          <div style="background:#fff;border:1px solid var(--l-border);border-radius:var(--l-radius-lg);overflow:hidden">
+            <table style="width:100%;border-collapse:collapse" id="pt-quiz-table">
+              <thead>
+                <tr style="background:var(--ink);color:#fff">
+                  <th style="padding:10px 14px;font-size:11px;letter-spacing:2px;text-transform:uppercase;text-align:left;font-weight:500">Quiz Name</th>
+                  <th style="padding:10px 14px;font-size:11px;letter-spacing:2px;text-transform:uppercase;text-align:left;font-weight:500">Best Score</th>
+                  <th style="padding:10px 14px;font-size:11px;letter-spacing:2px;text-transform:uppercase;text-align:left;font-weight:500">Action</th>
+                </tr>
+              </thead>
+              <tbody id="pt-quiz-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ACTIVE QUIZ VIEW -->
+        <div id="pt-active" style="display:none">
+          <!-- Progress bar -->
+          <div style="margin-bottom:1.25rem">
+            <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--l-text2);margin-bottom:.45rem">
+              <span id="pt-q-label">Question 1 / 10</span>
+              <span id="pt-score-label" style="color:var(--l-pink);font-weight:700">Score: 0</span>
+            </div>
+            <div style="height:6px;background:var(--l-bg3);border-radius:4px;overflow:hidden">
+              <div id="pt-progress-bar" style="height:100%;background:linear-gradient(90deg,var(--l-pink),var(--l-pink-dark));border-radius:4px;transition:width .4s ease;width:0%"></div>
+            </div>
+          </div>
+
+          <!-- Quiz card -->
+          <div class="l-quiz-box" style="margin-bottom:1rem">
+            <div class="l-quiz-label" id="pt-quiz-hint">Japanese → English</div>
+            <div class="l-quiz-q" id="pt-quiz-q" style="font-size:2.8rem">—</div>
+            <div style="font-size:12px;color:var(--l-text3);margin-top:.3rem;font-style:italic" id="pt-quiz-sub"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:420px;margin:0 auto" id="pt-opts"></div>
+          <div class="l-quiz-feedback" id="pt-feedback"></div>
+
+          <!-- Skip / quit buttons -->
+          <div style="display:flex;gap:8px;justify-content:center;margin-top:1rem">
+            <button class="l-btn-outline" style="font-size:12px;padding:7px 18px" onclick="ptQuit()">← Back to List</button>
+          </div>
+        </div>
+
+        <!-- RESULTS VIEW -->
+        <div id="pt-results" style="display:none">
+          <div class="nz-result-wrap">
+            <div class="nz-result-emoji" id="pt-res-emoji">🎉</div>
+            <h2 class="nz-result-title" id="pt-res-title">Well Done!</h2>
+            <div class="nz-result-score" id="pt-res-score">0 / 10</div>
+            <div class="nz-result-pct" id="pt-res-pct">0% accuracy</div>
+            <!-- Per-question review -->
+            <div id="pt-res-review" style="text-align:left;max-width:480px;margin:1.5rem auto 1.5rem;display:none"></div>
+            <div class="nz-result-btns">
+              <button class="nz-btn-retry" onclick="ptRetry()">↺ Try Again</button>
+              <button class="nz-btn-back" onclick="ptQuit()">← All Quizzes</button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /qm-practice -->
+    </div><!-- /sec-learn-quiz -->
+
+    <!-- JLPT PRACTICE (embedded from jlpt-practice.html) -->
+    <div id="sec-jlpt-practice" class="zen-section">
+      <style>
+        /* ── JLPT Practice scoped styles ── */
+        #sec-jlpt-practice {
+          background: linear-gradient(135deg, #fce4ec 0%, #ffd6e7 40%, #ffe0f0 70%, #fce4ec 100%);
+          border-radius: 20px;
+          padding: 0;
+          overflow: hidden;
+          min-height: 80vh;
+          position: relative;
+        }
+        .jp-petals { position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+        .jp-petal {
+          position:absolute; width:11px; height:11px;
+          background:radial-gradient(ellipse, #ffb3d1 30%, #ff80ab 100%);
+          border-radius:50% 0 50% 0; opacity:.5;
+          animation:jpFall linear infinite;
+        }
+        @keyframes jpFall { 0%{transform:translateY(-20px) rotate(0deg);opacity:.6} 100%{transform:translateY(105vh) rotate(720deg);opacity:0} }
+        .jp-inner { position:relative; z-index:1; max-width:540px; margin:0 auto; padding:0 0 60px; }
+        .jp-head {
+          background:linear-gradient(135deg,#c2185b,#e91e8c,#f06292);
+          padding:22px 20px 18px; text-align:center; position:relative;
+        }
+        .jp-head::before { content:'🌸 🌸 🌸 🌸 🌸 🌸'; position:absolute; top:5px; left:0; right:0; font-size:13px; letter-spacing:6px; opacity:.45; }
+        .jp-head h2 { font-family:'Noto Serif JP',serif; color:#fff; font-size:26px; letter-spacing:2px; }
+        .jp-head p  { color:#ffe0f0; font-size:12px; margin-top:4px; }
+
+        .jp-lv-tabs { display:flex; gap:8px; padding:14px 16px 0; overflow-x:auto; scrollbar-width:none; background:rgba(255,255,255,.3); backdrop-filter:blur(10px); border-bottom:2px solid #f48fb1; }
+        .jp-lv-tabs::-webkit-scrollbar { display:none; }
+        .jp-lv-tab { flex-shrink:0; padding:8px 18px; border-radius:18px 18px 0 0; border:none; cursor:pointer; font-weight:700; font-size:14px; background:rgba(255,255,255,.5); color:#7b3f52; transition:all .25s; font-family:'DM Sans',sans-serif; }
+        .jp-lv-tab.active { background:#fff; color:#c2185b; box-shadow:0 -4px 12px rgba(233,30,140,.18); }
+        .jp-lv-tab:hover:not(.active) { background:rgba(255,255,255,.72); }
+
+        .jp-cat-tabs { display:flex; gap:6px; padding:12px 16px; background:rgba(255,255,255,.6); backdrop-filter:blur(8px); }
+        .jp-cat-tab { flex:1; padding:8px 4px; border-radius:12px; border:2px solid transparent; cursor:pointer; font-size:11px; font-weight:500; background:#fff; color:#7b3f52; transition:all .22s; text-align:center; font-family:'DM Sans',sans-serif; }
+        .jp-cat-tab.active { background:linear-gradient(135deg,#e91e8c,#c2185b); color:#fff; border-color:#c2185b; box-shadow:0 4px 12px rgba(194,24,91,.3); }
+        .jp-cat-icon { font-size:16px; display:block; margin-bottom:2px; }
+
+        .jp-progress-bar { height:6px; background:#fce4ec; margin:0 16px; border-radius:3px; overflow:hidden; margin-bottom:6px; }
+        .jp-progress-fill { height:100%; background:linear-gradient(90deg,#e91e8c,#f06292); border-radius:3px; transition:width .5s ease; }
+        .jp-progress-lbl { text-align:right; padding:0 16px; font-size:11px; color:#7b3f52; margin-bottom:10px; }
+
+        .jp-q-area { padding:14px 16px; }
+        .jp-q-card {
+          background:rgba(255,255,255,.92); border-radius:18px; padding:22px 18px;
+          box-shadow:0 8px 32px rgba(233,30,140,.14); margin-bottom:14px;
+          border:1.5px solid #f8bbd0; position:relative; overflow:hidden;
+        }
+        .jp-q-card::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background:linear-gradient(90deg,#e91e8c,#f06292,#e91e8c); }
+        .jp-badge { display:inline-block; padding:3px 11px; border-radius:20px; background:linear-gradient(135deg,#fce4ec,#f8bbd0); color:#c2185b; font-size:11px; font-weight:700; border:1px solid #f48fb1; margin-bottom:12px; text-transform:uppercase; letter-spacing:1px; }
+        .jp-counter { float:right; color:#f48fb1; font-size:12px; font-weight:500; }
+        .jp-q-text { font-size:19px; line-height:1.75; color:#3d1a24; font-weight:400; font-family:'Noto Sans JP',sans-serif; }
+        .jp-blank { display:inline-block; border-bottom:2.5px solid #c2185b; min-width:48px; text-align:center; color:#c2185b; font-weight:700; padding:0 4px; }
+        .jp-underline { text-decoration:underline; text-decoration-color:#c2185b; text-underline-offset:3px; font-weight:600; color:#c2185b; }
+        .jp-context { font-size:12px; color:#7b3f52; margin-bottom:10px; padding:6px 10px; background:#fce4ec; border-radius:8px; display:inline-block; }
+        .jp-passage { font-size:13.5px; line-height:2; color:#3d1a24; background:linear-gradient(135deg,#fff9fb,#fff0f5); border-radius:12px; padding:14px; border-left:4px solid #f48fb1; max-height:190px; overflow-y:auto; font-family:'Noto Sans JP',sans-serif; }
+        .jp-passage .highlight { background:#ffd6e7; border-radius:3px; padding:1px 3px; }
+
+        .jp-opts { display:flex; flex-direction:column; gap:9px; }
+        .jp-opt {
+          background:#fff; border:2px solid #f8bbd0; border-radius:14px; padding:13px 16px;
+          font-family:'Noto Sans JP',sans-serif; font-size:16px; color:#3d1a24;
+          cursor:pointer; text-align:left; transition:all .22s; display:flex; align-items:center; gap:11px;
+          box-shadow:0 2px 8px rgba(233,30,140,.07);
+        }
+        .jp-opt-num { width:26px; height:26px; border-radius:50%; background:#fce4ec; color:#c2185b; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; border:1.5px solid #f48fb1; }
+        .jp-opt:hover:not(.jp-disabled) { border-color:#e91e8c; background:linear-gradient(135deg,#fff0f5,#fff); transform:translateX(4px); box-shadow:0 4px 14px rgba(233,30,140,.18); }
+        .jp-opt.jp-correct  { border-color:#4caf50; background:#e8f5e9; }
+        .jp-opt.jp-correct .jp-opt-num { background:#4caf50; color:#fff; border-color:#4caf50; }
+        .jp-opt.jp-wrong    { border-color:#ef5350; background:#ffebee; }
+        .jp-opt.jp-wrong .jp-opt-num   { background:#ef5350; color:#fff; border-color:#ef5350; }
+        .jp-opt.jp-disabled { cursor:default; }
+
+        .jp-feedback { border-radius:12px; padding:13px 16px; margin-top:11px; font-size:13.5px; line-height:1.6; display:none; }
+        .jp-feedback.show { display:block; }
+        .jp-feedback.ok  { background:#e8f5e9; border:1.5px solid #4caf50; color:#2e7d32; }
+        .jp-feedback.bad { background:#ffebee; border:1.5px solid #ef5350; color:#c62828; }
+        .jp-fb-title { font-weight:700; font-size:15px; margin-bottom:3px; }
+        .jp-fb-exp   { font-size:12.5px; margin-top:5px; color:#7b3f52; }
+
+        .jp-btn-row { display:flex; gap:10px; padding:0 16px 16px; }
+        .jp-btn-next { flex:1; padding:13px; border-radius:13px; border:none; background:linear-gradient(135deg,#e91e8c,#c2185b); color:#fff; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:700; cursor:pointer; box-shadow:0 4px 14px rgba(194,24,91,.38); transition:all .2s; }
+        .jp-btn-next:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 6px 20px rgba(194,24,91,.48); }
+        .jp-btn-next:disabled { opacity:.45; cursor:not-allowed; transform:none; }
+        .jp-btn-skip { padding:13px 18px; border-radius:13px; border:2px solid #f48fb1; background:#fff; color:#c2185b; font-family:'DM Sans',sans-serif; font-size:13px; font-weight:500; cursor:pointer; transition:all .2s; }
+        .jp-btn-skip:hover { background:#fce4ec; }
+
+        /* Home screen */
+        .jp-home { padding:16px; }
+        .jp-home-title { font-family:'Noto Serif JP',serif; font-size:21px; color:#c2185b; padding:8px 0 3px; }
+        .jp-home-sub   { font-size:12px; color:#7b3f52; margin-bottom:14px; }
+        .jp-lv-cards   { display:flex; flex-direction:column; gap:10px; }
+        .jp-lv-card {
+          background:rgba(255,255,255,.92); border-radius:16px; padding:15px 17px;
+          box-shadow:0 6px 24px rgba(233,30,140,.13); border:1.5px solid #f8bbd0;
+          cursor:pointer; transition:all .22s; display:flex; align-items:center; gap:15px;
+        }
+        .jp-lv-card:hover { transform:translateY(-3px); box-shadow:0 10px 28px rgba(233,30,140,.2); }
+        .jp-lv-badge { width:50px; height:50px; border-radius:13px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:17px; font-weight:800; }
+        .jpb-n5 { background:linear-gradient(135deg,#f8bbd0,#f48fb1); color:#880e4f; }
+        .jpb-n4 { background:linear-gradient(135deg,#ce93d8,#ab47bc); color:#fff; }
+        .jpb-n3 { background:linear-gradient(135deg,#90caf9,#42a5f5); color:#fff; }
+        .jpb-n2 { background:linear-gradient(135deg,#a5d6a7,#66bb6a); color:#fff; }
+        .jpb-n1 { background:linear-gradient(135deg,#ffcc80,#ffa726); color:#fff; }
+        .jp-lv-info { flex:1; }
+        .jp-lv-name  { font-size:15px; font-weight:700; color:#3d1a24; }
+        .jp-lv-desc  { font-size:12px; color:#7b3f52; margin-top:2px; }
+        .jp-lv-prog  { margin-top:7px; }
+        .jp-lp-bar   { height:5px; background:#fce4ec; border-radius:3px; overflow:hidden; }
+        .jp-lp-fill  { height:100%; background:linear-gradient(90deg,#e91e8c,#f06292); border-radius:3px; }
+        .jp-lp-txt   { font-size:10px; color:#f48fb1; margin-top:3px; }
+        .jp-lv-arrow { color:#f48fb1; font-size:20px; }
+
+        /* Score screen */
+        .jp-score-screen { display:none; text-align:center; padding:38px 22px; background:rgba(255,255,255,.92); margin:14px; border-radius:22px; box-shadow:0 8px 32px rgba(233,30,140,.15); }
+        .jp-score-screen.show { display:block; }
+        .jp-score-circle { width:125px; height:125px; border-radius:50%; background:linear-gradient(135deg,#e91e8c,#c2185b); margin:0 auto 18px; display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow:0 8px 28px rgba(194,24,91,.38); }
+        .jp-score-num   { font-size:38px; font-weight:700; color:#fff; }
+        .jp-score-lbl   { font-size:12px; color:#ffe0f0; }
+        .jp-score-title { font-family:'Noto Serif JP',serif; font-size:24px; color:#c2185b; margin-bottom:8px; }
+        .jp-score-sub   { color:#7b3f52; font-size:14px; margin-bottom:22px; }
+        .jp-btn-retry   { padding:13px 38px; border-radius:13px; border:none; background:linear-gradient(135deg,#e91e8c,#c2185b); color:#fff; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:700; cursor:pointer; box-shadow:0 4px 14px rgba(194,24,91,.38); }
+      </style>
+
+      <!-- Petals bg -->
+      <div class="jp-petals" id="jpPetals"></div>
+
+      <div class="jp-inner">
+        <!-- Header -->
+        <div class="jp-head">
+          <h2>🌸 JLPT Practice</h2>
+          <p>桜の季節に日本語を勉強しましょう</p>
+        </div>
+
+        <!-- HOME SCREEN -->
+        <div id="jpHomeScreen" class="jp-home">
+          <div class="jp-home-title">Choose Your Level</div>
+          <div class="jp-home-sub">Select a JLPT level to start practicing</div>
+          <div class="jp-lv-cards">
+            <div class="jp-lv-card" onclick="jpSelectLevel('N5')">
+              <div class="jp-lv-badge jpb-n5">N5</div>
+              <div class="jp-lv-info">
+                <div class="jp-lv-name">JLPT N5 — Beginner</div>
+                <div class="jp-lv-desc">Basic hiragana, katakana &amp; 100 kanji</div>
+                <div class="jp-lv-prog"><div class="jp-lp-bar"><div class="jp-lp-fill" style="width:35%"></div></div><div class="jp-lp-txt">35% completed</div></div>
+              </div><div class="jp-lv-arrow">›</div>
+            </div>
+            <div class="jp-lv-card" onclick="jpSelectLevel('N4')">
+              <div class="jp-lv-badge jpb-n4">N4</div>
+              <div class="jp-lv-info">
+                <div class="jp-lv-name">JLPT N4 — Elementary</div>
+                <div class="jp-lv-desc">~300 kanji, everyday vocabulary</div>
+                <div class="jp-lv-prog"><div class="jp-lp-bar"><div class="jp-lp-fill" style="width:20%"></div></div><div class="jp-lp-txt">20% completed</div></div>
+              </div><div class="jp-lv-arrow">›</div>
+            </div>
+            <div class="jp-lv-card" onclick="jpSelectLevel('N3')">
+              <div class="jp-lv-badge jpb-n3">N3</div>
+              <div class="jp-lv-info">
+                <div class="jp-lv-name">JLPT N3 — Intermediate</div>
+                <div class="jp-lv-desc">~650 kanji, complex grammar</div>
+                <div class="jp-lv-prog"><div class="jp-lp-bar"><div class="jp-lp-fill" style="width:10%"></div></div><div class="jp-lp-txt">10% completed</div></div>
+              </div><div class="jp-lv-arrow">›</div>
+            </div>
+            <div class="jp-lv-card" onclick="jpSelectLevel('N2')">
+              <div class="jp-lv-badge jpb-n2">N2</div>
+              <div class="jp-lv-info">
+                <div class="jp-lv-name">JLPT N2 — Upper Intermediate</div>
+                <div class="jp-lv-desc">~1000 kanji, formal Japanese</div>
+                <div class="jp-lv-prog"><div class="jp-lp-bar"><div class="jp-lp-fill" style="width:5%"></div></div><div class="jp-lp-txt">5% completed</div></div>
+              </div><div class="jp-lv-arrow">›</div>
+            </div>
+            <div class="jp-lv-card" onclick="jpSelectLevel('N1')">
+              <div class="jp-lv-badge jpb-n1">N1</div>
+              <div class="jp-lv-info">
+                <div class="jp-lv-name">JLPT N1 — Advanced</div>
+                <div class="jp-lv-desc">~2000 kanji, native-level texts</div>
+                <div class="jp-lv-prog"><div class="jp-lp-bar"><div class="jp-lp-fill" style="width:2%"></div></div><div class="jp-lp-txt">2% completed</div></div>
+              </div><div class="jp-lv-arrow">›</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PRACTICE SCREEN -->
+        <div id="jpPracticeScreen" style="display:none">
+          <!-- Level tabs -->
+          <div class="jp-lv-tabs" id="jpLvTabs">
+            <button class="jp-lv-tab" onclick="jpSelectLevel('N5')">N5</button>
+            <button class="jp-lv-tab" onclick="jpSelectLevel('N4')">N4</button>
+            <button class="jp-lv-tab" onclick="jpSelectLevel('N3')">N3</button>
+            <button class="jp-lv-tab" onclick="jpSelectLevel('N2')">N2</button>
+            <button class="jp-lv-tab" onclick="jpSelectLevel('N1')">N1</button>
+          </div>
+          <!-- Category tabs -->
+          <div class="jp-cat-tabs">
+            <button class="jp-cat-tab active" onclick="jpSelectCat('vocab',this)"><span class="jp-cat-icon">📚</span>Vocabulary</button>
+            <button class="jp-cat-tab" onclick="jpSelectCat('grammar',this)"><span class="jp-cat-icon">✏️</span>Grammar</button>
+            <button class="jp-cat-tab" onclick="jpSelectCat('kanji',this)"><span class="jp-cat-icon">漢</span>Kanji</button>
+            <button class="jp-cat-tab" onclick="jpSelectCat('reading',this)"><span class="jp-cat-icon">📖</span>Reading</button>
+          </div>
+          <!-- Progress -->
+          <div class="jp-progress-bar"><div class="jp-progress-fill" id="jpProgressFill" style="width:0%"></div></div>
+          <div class="jp-progress-lbl" id="jpProgressLbl">Question 0 / 0</div>
+          <!-- Question -->
+          <div class="jp-q-area">
+            <div class="jp-q-card" id="jpQCard">
+              <span class="jp-badge" id="jpQBadge">Vocabulary</span>
+              <span class="jp-counter" id="jpCounter">1/5</span>
+              <div style="clear:both;height:8px"></div>
+              <div id="jpQContext"></div>
+              <div class="jp-q-text" id="jpQText"></div>
+            </div>
+            <div class="jp-opts" id="jpOptsDiv"></div>
+            <div class="jp-feedback" id="jpFeedback">
+              <div class="jp-fb-title" id="jpFbTitle"></div>
+              <div id="jpFbExp"></div>
+            </div>
+          </div>
+          <div class="jp-btn-row">
+            <button class="jp-btn-skip" onclick="jpSkip()">Skip</button>
+            <button class="jp-btn-next" id="jpBtnNext" onclick="jpNext()" disabled>Next →</button>
+          </div>
+          <!-- Score screen -->
+          <div class="jp-score-screen" id="jpScoreScreen">
+            <div class="jp-score-circle">
+              <div class="jp-score-num" id="jpScoreNum">0</div>
+              <div class="jp-score-lbl" id="jpScoreLbl">/ 5</div>
+            </div>
+            <div class="jp-score-title" id="jpScoreTitle">Great Job! 🌸</div>
+            <div class="jp-score-sub"   id="jpScoreSub">Keep studying!</div>
+            <button class="jp-btn-retry" onclick="jpRetry()">Try Again 🌸</button>
+          </div>
+        </div>
+      </div><!-- /jp-inner -->
+    </div><!-- /sec-jlpt-practice -->
+
 
     <!-- JLPT SECTIONS -->
     <div id="sec-n5" class="zen-section">
@@ -2199,6 +2860,7 @@ main { flex:1; padding:2rem; overflow-x:hidden; max-width:100%; }
   <button class="mobile-nav-btn" data-section="learn-quiz"><span class="nav-icon">&#129504;</span>Quiz</button>
   <button class="mobile-nav-btn" data-section="learn-kanji"><span class="nav-icon">&#28450;</span>Kanji</button>
   <button class="mobile-nav-btn" data-section="learn-vocab"><span class="nav-icon">&#128292;</span>Vocab</button>
+  <button class="mobile-nav-btn" data-section="jlpt-practice"><span class="nav-icon">🎌</span>JLPT</button>
 </div>
 
 <div id="toast"></div>
@@ -7365,6 +8027,22 @@ function showSection(id) {
     var t = document.querySelector('#kanji-tabs .l-tab-btn.active');
     buildKanjiFromJSON(t ? t.dataset.lv : 'n5');
   }
+  if(id === 'learn-kana'){
+    // Always rebuild so grid shows after section becomes visible
+    var activeKanaTab = document.querySelector('#kana-tabs .l-tab-btn.active');
+    var kanaKey = activeKanaTab ? activeKanaTab.dataset.kana : 'h';
+    if(typeof kanaMap !== 'undefined' && typeof buildKanaGrid === 'function'){
+      buildKanaGrid(kanaMap[kanaKey] || hiragana);
+    }
+  }
+  if(id === 'jlpt-practice'){
+    // Show JLPT home screen when section first opens
+    var homeScr = document.getElementById('jpHomeScreen');
+    var practScr = document.getElementById('jpPracticeScreen');
+    if(homeScr && homeScr.style.display === 'none' && practScr && practScr.style.display === 'none'){
+      homeScr.style.display = 'block';
+    }
+  }
 }
 
 document.addEventListener('click', function(e){
@@ -7858,48 +8536,483 @@ nextQ();
 // Init kanji section with embedded fallback for first load
 buildKanjiFromJSON('n5');
 
+// ══ PRACTICE TEST ENGINE ════════════════════════════════════════════
 
-
-
-
-// ══ USER PROFILE FROM SESSION STORAGE ══════════════════════════════
 (function(){
-  function loadUserProfile(){
-    try {
-      var name = sessionStorage.getItem('userName')
-               || sessionStorage.getItem('displayName')
-               || sessionStorage.getItem('user_name')
-               || localStorage.getItem('userName')
-               || localStorage.getItem('displayName');
-      if(!name){
-        // Try Firebase-style stored user object
-        var userStr = sessionStorage.getItem('user') || localStorage.getItem('user');
-        if(userStr){
-          var user = JSON.parse(userStr);
-          name = user.displayName || user.name || user.email || null;
-        }
-      }
-      if(name){
-        var badge = document.getElementById('user-profile-badge');
-        var nameEl = document.getElementById('user-profile-name');
-        var initEl = document.getElementById('user-avatar-initial');
-        if(badge && nameEl && initEl){
-          var display = name.split('@')[0]; // strip email domain if needed
-          nameEl.textContent = display.length > 14 ? display.slice(0,14)+'\u2026' : display;
-          initEl.textContent = display.charAt(0).toUpperCase();
-          badge.style.display = 'flex';
-        }
-      }
-    } catch(e){ /* silent fail */ }
-  }
-  loadUserProfile();
-  // Re-check after short delay in case Firebase sets it async
-  setTimeout(loadUserProfile, 1200);
-  setTimeout(loadUserProfile, 3000);
 
-  // Listen for storage events (login from another tab)
-  window.addEventListener('storage', loadUserProfile);
+  // ── QUIZ CATALOGUE (from KanjiPath_Quiz.html) ──────────────────────
+  var ptQuizzes = [
+    {level:'N5', name:'JLPT N5 Nouns Part 1', type:'vocab'},
+    {level:'N5', name:'JLPT N5 Nouns Part 2', type:'vocab'},
+    {level:'N5', name:'JLPT N5 Nouns Part 3', type:'vocab'},
+    {level:'N5', name:'JLPT N5 Adverbs',       type:'vocab'},
+    {level:'N5', name:'JLPT N5 I-Adjectives',  type:'vocab'},
+    {level:'N5', name:'JLPT N5 Na-Adjectives', type:'vocab'},
+    {level:'N5', name:'JLPT N5 Verbs Part 1',  type:'vocab'},
+    {level:'N5', name:'JLPT N5 Verbs Part 2',  type:'vocab'},
+    {level:'N5', name:'JLPT N5 Vocab Set 1',   type:'vocab'},
+    {level:'N5', name:'JLPT N5 Vocab Set 2',   type:'vocab'},
+    {level:'N5', name:'JLPT N5 Vocab Set 3',   type:'vocab'},
+    {level:'N5', name:'JLPT N5 Vocab Set 4',   type:'vocab'},
+    {level:'N5', name:'JLPT N5 Vocab Set 5',   type:'vocab'},
+    {level:'N5', name:'JLPT N5 Kanji Set 1',   type:'kanji'},
+    {level:'N5', name:'JLPT N5 Kanji Set 2',   type:'kanji'},
+    {level:'N4', name:'JLPT N4 Nouns Part 1',  type:'vocab'},
+    {level:'N4', name:'JLPT N4 Nouns Part 2',  type:'vocab'},
+    {level:'N4', name:'JLPT N4 Adverbs',       type:'vocab'},
+    {level:'N4', name:'JLPT N4 I-Adjectives',  type:'vocab'},
+    {level:'N4', name:'JLPT N4 Na-Adjectives', type:'vocab'},
+    {level:'N4', name:'JLPT N4 Verbs Part 1',  type:'vocab'},
+    {level:'N4', name:'JLPT N4 Verbs Part 2',  type:'vocab'},
+    {level:'N4', name:'JLPT N4 Vocab Set 1',   type:'vocab'},
+    {level:'N4', name:'JLPT N4 Vocab Set 2',   type:'vocab'},
+    {level:'N4', name:'JLPT N4 Vocab Set 3',   type:'vocab'},
+    {level:'N4', name:'JLPT N4 Kanji Set 1',   type:'kanji'},
+    {level:'N3', name:'JLPT N3 Nouns Part 1',  type:'vocab'},
+    {level:'N3', name:'JLPT N3 Nouns Part 2',  type:'vocab'},
+    {level:'N3', name:'JLPT N3 Adjectives',    type:'vocab'},
+    {level:'N3', name:'JLPT N3 Verbs Part 1',  type:'vocab'},
+    {level:'N3', name:'JLPT N3 Verbs Part 2',  type:'vocab'},
+    {level:'N3', name:'JLPT N3 Vocab Set 1',   type:'vocab'},
+    {level:'N3', name:'JLPT N3 Vocab Set 2',   type:'vocab'},
+    {level:'N3', name:'JLPT N3 Vocab Set 3',   type:'vocab'},
+    {level:'N3', name:'JLPT N3 Kanji Set 1',   type:'kanji'},
+    {level:'N2', name:'JLPT N2 Nouns Part 1',  type:'vocab'},
+    {level:'N2', name:'JLPT N2 Adjectives',    type:'vocab'},
+    {level:'N2', name:'JLPT N2 Verbs Part 1',  type:'vocab'},
+    {level:'N2', name:'JLPT N2 Vocab Set 1',   type:'vocab'},
+    {level:'N2', name:'JLPT N2 Vocab Set 2',   type:'vocab'},
+    {level:'N2', name:'JLPT N2 Vocab Set 3',   type:'vocab'},
+    {level:'N1', name:'JLPT N1 Vocab Set 30',  type:'vocab'},
+    {level:'N1', name:'JLPT N1 Vocab Set 31',  type:'vocab'},
+    {level:'N1', name:'JLPT N1 Vocab Set 32',  type:'vocab'},
+    {level:'N1', name:'JLPT N1 Vocab Set 33',  type:'vocab'},
+    {level:'N1', name:'JLPT N1 Vocab Set 34',  type:'vocab'},
+  ];
+
+  // ── STATE ──────────────────────────────────────────────────────────
+  var ptScores    = JSON.parse(localStorage.getItem('pt_scores')    || '{}');
+  var ptDoneCount = parseInt(localStorage.getItem('pt_done_count')  || '0', 10);
+  var ptBestStreak= parseInt(localStorage.getItem('pt_best_streak') || '0', 10);
+  var ptTotalQ    = parseInt(localStorage.getItem('pt_total_q')     || '0', 10);
+  var ptTotalC    = parseInt(localStorage.getItem('pt_total_c')     || '0', 10);
+
+  var ptCurrentFilter  = 'N5';
+  var ptActiveQuiz     = null;
+  var ptQuestions      = [];
+  var ptQIdx           = 0;
+  var ptScore          = 0;
+  var ptSessionStreak  = 0;
+  var ptLocked         = false;
+  var ptHistory        = []; // {q, chosen, correct} per question
+
+  // ── SAVE / LOAD ────────────────────────────────────────────────────
+  function ptSave(){
+    localStorage.setItem('pt_scores',      JSON.stringify(ptScores));
+    localStorage.setItem('pt_done_count',  ptDoneCount);
+    localStorage.setItem('pt_best_streak', ptBestStreak);
+    localStorage.setItem('pt_total_q',     ptTotalQ);
+    localStorage.setItem('pt_total_c',     ptTotalC);
+  }
+
+  // ── GENERATE QUESTIONS from embedded vocab/kanji data ──────────────
+  function ptGenerateQuestions(quiz){
+    var pool = [];
+    var lv   = quiz.level.toLowerCase(); // 'n5', 'n4' etc.
+
+    if(quiz.type === 'kanji'){
+      // Use kanjiData embedded in the page (or cache)
+      var kd = (typeof kanjiCache !== 'undefined' && kanjiCache[lv] && kanjiCache[lv].length)
+             ? kanjiCache[lv]
+             : (typeof kanjiData !== 'undefined' ? (kanjiData[lv] || []) : []);
+
+      kd.forEach(function(k){
+        if(k.meaning || k.m){
+          pool.push({
+            jp:      k.kanji || k.k,
+            sub:     (k.on || k.kun || ''),
+            answer:  k.meaning || k.m,
+            hint:    'What does this kanji mean?',
+            type:    'kanji'
+          });
+        }
+      });
+    } else {
+      // Vocab — use the embedded vocabData
+      // Build level-appropriate words from all vocabData categories
+      // For specific named sets, we slice from different categories
+      var allVocab = [];
+      if(typeof vocabData !== 'undefined'){
+        Object.values(vocabData).forEach(function(cat){ allVocab = allVocab.concat(cat); });
+      }
+
+      // Filter & shuffle
+      var shuffled = allVocab.slice().sort(function(){ return Math.random() - .5; });
+
+      // Take 10 words. For higher levels prefer longer/harder words.
+      var hardnessMap = { N5:0, N4:4, N3:8, N2:12, N1:15 };
+      var minLen = hardnessMap[quiz.level] || 0;
+      var filtered = shuffled.filter(function(w){
+        return w.en && w.jp && (w.en.split(' ').length > (minLen/5|0) || minLen === 0);
+      });
+      if(!filtered.length) filtered = shuffled;
+
+      pool = filtered.slice(0, 40).map(function(w){
+        return {
+          jp:     w.jp,
+          sub:    w.r || '',
+          answer: w.en,
+          hint:   'What does this mean?',
+          type:   'vocab'
+        };
+      });
+    }
+
+    if(!pool.length) return [];
+
+    // Shuffle and take 10 questions
+    var qs = pool.slice().sort(function(){ return Math.random() - .5; }).slice(0, 10);
+
+    // Generate 4 options per question
+    return qs.map(function(q){
+      var wrong = pool
+        .filter(function(p){ return p.answer !== q.answer; })
+        .sort(function(){ return Math.random() - .5; })
+        .slice(0, 3)
+        .map(function(p){ return p.answer; });
+      var opts = [q.answer].concat(wrong).sort(function(){ return Math.random() - .5; });
+      return { jp:q.jp, sub:q.sub, answer:q.answer, opts:opts, hint:q.hint };
+    });
+  }
+
+  // ── RENDER QUIZ TABLE ──────────────────────────────────────────────
+  function ptRenderTable(filter){
+    var tbody = document.getElementById('pt-quiz-body');
+    if(!tbody) return;
+    var list = filter === 'all' ? ptQuizzes : ptQuizzes.filter(function(q){ return q.level === filter; });
+
+    tbody.innerHTML = list.map(function(q, i){
+      var key   = q.level + '_' + q.name.replace(/\s+/g,'_');
+      var best  = ptScores[key] || 0;
+      var pct   = best;
+      var done  = best > 0;
+      return '<tr class="pt-quiz-row" onclick="ptStartQuiz(\''+key+'\')">'+
+        '<td style="font-size:13px">'+ q.name +
+          (done ? '<span class="pt-current-badge" style="background:var(--l-green)">DONE</span>' : '')+
+        '</td>'+
+        '<td>'+
+          '<span class="pt-score-bar"><span class="pt-score-fill" style="width:'+pct+'%"></span></span>'+
+          '<span style="font-size:11px;color:var(--l-text2)">'+pct+'%</span>'+
+        '</td>'+
+        '<td><button class="pt-try-btn'+(done?' done':'') +'" data-key="'+key+'">'+
+          (done ? '✓ Retry' : 'Start →')+
+        '</button></td>'+
+      '</tr>';
+    }).join('');
+  }
+
+  function ptUpdateStats(){
+    var el;
+    if((el = document.getElementById('pt-stat-done')))    el.textContent = ptDoneCount;
+    if((el = document.getElementById('pt-stat-perfect'))) el.textContent = Object.values(ptScores).filter(function(s){ return s === 100; }).length;
+    if((el = document.getElementById('pt-stat-streak')))  el.textContent = ptBestStreak + '🔥';
+    if((el = document.getElementById('pt-stat-acc')))     el.textContent = ptTotalQ ? Math.round(ptTotalC/ptTotalQ*100)+'%' : '—';
+  }
+
+  // ── START QUIZ ─────────────────────────────────────────────────────
+  window.ptStartQuiz = function(key){
+    var quiz = ptQuizzes.find(function(q){
+      return (q.level+'_'+q.name.replace(/\s+/g,'_')) === key;
+    });
+    if(!quiz){ showToast('Quiz not found'); return; }
+
+    ptActiveQuiz    = quiz;
+    ptQuestions     = ptGenerateQuestions(quiz);
+    if(!ptQuestions.length){
+      showToast('⚠️ No data available for this quiz yet');
+      return;
+    }
+    ptQIdx          = 0;
+    ptScore         = 0;
+    ptSessionStreak = 0;
+    ptLocked        = false;
+    ptHistory       = [];
+
+    document.getElementById('pt-lobby').style.display   = 'none';
+    document.getElementById('pt-results').style.display = 'none';
+    document.getElementById('pt-active').style.display  = 'block';
+    ptRenderQuestion();
+  };
+
+  // ── RENDER QUESTION ────────────────────────────────────────────────
+  function ptRenderQuestion(){
+    if(ptQIdx >= ptQuestions.length){ ptShowResults(); return; }
+    ptLocked = false;
+
+    var q        = ptQuestions[ptQIdx];
+    var total    = ptQuestions.length;
+    var pct      = Math.round(ptQIdx / total * 100);
+
+    // Header
+    document.getElementById('pt-q-label').textContent    = 'Question ' + (ptQIdx+1) + ' / ' + total;
+    document.getElementById('pt-score-label').textContent = 'Score: ' + ptScore;
+    document.getElementById('pt-progress-bar').style.width = pct + '%';
+
+    // Question card
+    document.getElementById('pt-quiz-hint').textContent = q.hint || 'What does this mean?';
+    var charEl = document.getElementById('pt-quiz-q');
+    charEl.textContent = q.jp;
+    charEl.classList.remove('pop'); void charEl.offsetWidth; charEl.classList.add('pop');
+    document.getElementById('pt-quiz-sub').textContent   = q.sub || '';
+    document.getElementById('pt-feedback').textContent   = '';
+    document.getElementById('pt-feedback').style.color   = '';
+
+    // Options
+    var optsEl = document.getElementById('pt-opts');
+    optsEl.innerHTML = '';
+    q.opts.forEach(function(opt){
+      var btn = document.createElement('button');
+      btn.className  = 'l-quiz-opt';
+      btn.textContent = opt;
+      btn.addEventListener('click', function(){ ptCheckAnswer(opt, q.answer, btn, optsEl, q); });
+      optsEl.appendChild(btn);
+    });
+  }
+
+  // ── CHECK ANSWER ───────────────────────────────────────────────────
+  function ptCheckAnswer(chosen, correct, btn, optsEl, q){
+    if(ptLocked) return;
+    ptLocked = true;
+
+    var fb      = document.getElementById('pt-feedback');
+    var isRight = (chosen === correct);
+    ptHistory.push({ jp:q.jp, hint:q.hint, chosen:chosen, correct:correct, ok:isRight });
+    ptTotalQ++;
+
+    if(isRight){
+      btn.classList.add('correct');
+      ptScore++;
+      ptSessionStreak++;
+      if(ptSessionStreak > ptBestStreak) ptBestStreak = ptSessionStreak;
+      ptTotalC++;
+      fb.textContent = '✓ Correct!' + (ptSessionStreak > 1 ? ' 🔥 ' + ptSessionStreak + ' streak!' : '');
+      fb.style.color = 'var(--l-green)';
+    } else {
+      btn.classList.add('wrong');
+      ptSessionStreak = 0;
+      optsEl.querySelectorAll('.l-quiz-opt').forEach(function(b){
+        if(b.textContent === correct) b.classList.add('correct');
+      });
+      fb.textContent = '✗ Answer: ' + correct;
+      fb.style.color = 'var(--l-red)';
+    }
+
+    // Disable all options
+    optsEl.querySelectorAll('.l-quiz-opt').forEach(function(b){ b.disabled = true; });
+
+    setTimeout(function(){
+      ptQIdx++;
+      ptRenderQuestion();
+    }, 1300);
+  }
+
+  // ── SHOW RESULTS ───────────────────────────────────────────────────
+  function ptShowResults(){
+    document.getElementById('pt-active').style.display  = 'none';
+    document.getElementById('pt-results').style.display = 'block';
+
+    var total   = ptQuestions.length;
+    var pct     = Math.round(ptScore / total * 100);
+    var emoji   = pct === 100 ? '🏆' : pct >= 70 ? '🎉' : pct >= 40 ? '📚' : '💪';
+    var title   = pct === 100 ? 'Perfect Score!' : pct >= 70 ? 'Well Done!' : pct >= 40 ? 'Keep Practicing!' : 'Don\'t Give Up!';
+
+    document.getElementById('pt-res-emoji').textContent = emoji;
+    document.getElementById('pt-res-title').textContent = title;
+    document.getElementById('pt-res-score').textContent = ptScore + ' / ' + total;
+    document.getElementById('pt-res-pct').textContent   = pct + '% accuracy';
+
+    // Save best score
+    if(ptActiveQuiz){
+      var key = ptActiveQuiz.level + '_' + ptActiveQuiz.name.replace(/\s+/g,'_');
+      if(!ptScores[key] || pct > ptScores[key]) ptScores[key] = pct;
+      ptDoneCount++;
+    }
+    ptSave();
+    ptUpdateStats();
+
+    // Review panel — show all Q&A
+    var reviewEl = document.getElementById('pt-res-review');
+    if(ptHistory.length){
+      reviewEl.style.display = 'block';
+      reviewEl.innerHTML = '<div style="font-size:12px;font-weight:700;color:var(--l-text2);letter-spacing:.05em;text-transform:uppercase;margin-bottom:.75rem">Review</div>' +
+        ptHistory.map(function(h, i){
+          return '<div class="pt-review-item ' + (h.ok ? 'correct-r' : 'wrong-r') + '">' +
+            '<div class="pt-review-q">' + h.jp + '</div>' +
+            '<div class="pt-review-ans">' +
+              (h.ok
+                ? '<span style="color:var(--l-green)">✓ ' + h.correct + '</span>'
+                : '<span style="color:var(--l-red)">✗ You: ' + h.chosen + '</span>' +
+                  ' &nbsp;→&nbsp; <span style="color:var(--l-green)">✓ ' + h.correct + '</span>'
+              ) +
+            '</div>' +
+          '</div>';
+        }).join('');
+    } else {
+      reviewEl.style.display = 'none';
+    }
+  }
+
+  // ── QUIZ MODE SWITCHER ─────────────────────────────────────────────
+  window.switchQuizMode = function(mode, btn){
+    document.querySelectorAll('#quiz-mode-tabs .l-quiz-type-btn').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById('qm-quick').style.display    = mode === 'quick'    ? '' : 'none';
+    document.getElementById('qm-practice').style.display = mode === 'practice' ? '' : 'none';
+    if(mode === 'practice'){ ptRenderTable(ptCurrentFilter); ptUpdateStats(); }
+  };
+
+  // ── LEVEL FILTER ───────────────────────────────────────────────────
+  window.ptFilterLevel = function(lv, btn){
+    document.querySelectorAll('#pt-level-tabs .pt-level-tab').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    ptCurrentFilter = lv;
+    ptRenderTable(lv);
+  };
+
+  // ── QUIT / RETRY ───────────────────────────────────────────────────
+  window.ptQuit = function(){
+    document.getElementById('pt-active').style.display  = 'none';
+    document.getElementById('pt-results').style.display = 'none';
+    document.getElementById('pt-lobby').style.display   = '';
+    ptRenderTable(ptCurrentFilter);
+    ptUpdateStats();
+  };
+
+  window.ptRetry = function(){
+    if(ptActiveQuiz) ptStartQuiz(ptActiveQuiz.level + '_' + ptActiveQuiz.name.replace(/\s+/g,'_'));
+  };
+
+  // ── INIT ───────────────────────────────────────────────────────────
+  ptRenderTable('N5');
+  ptUpdateStats();
+
+})(); // end PRACTICE TEST ENGINE
+
+
+
+
+
+
+// ══ USER PROFILE — Google Auth photo + dropdown ══════════════════
+// Renders the logged-in user's name and Google photo in the header
+
+function nzRenderProfile(displayName, photoURL, email) {
+  var badge      = document.getElementById('user-profile-badge');
+  var nameEl     = document.getElementById('user-profile-name');
+  var letterEl   = document.getElementById('user-avatar-letter');
+  var imgEl      = document.getElementById('user-avatar-img');
+  var pdName     = document.getElementById('pd-uname');
+  var pdEmailEl  = document.getElementById('pd-email');
+  var pdAvaLetter= document.getElementById('pd-ava-letter');
+  var pdAvaImg   = document.getElementById('pd-ava-img');
+  if (!badge) return;
+
+  var shortName = (displayName || 'User').split('@')[0];
+  var initial   = shortName.charAt(0).toUpperCase();
+  var display   = shortName.length > 12 ? shortName.slice(0, 12) + '…' : shortName;
+
+  if (nameEl)      nameEl.textContent      = display;
+  if (letterEl)    letterEl.textContent    = initial;
+  if (pdName)      pdName.textContent      = shortName;
+  if (pdEmailEl)   pdEmailEl.textContent   = email || '—';
+  if (pdAvaLetter) pdAvaLetter.textContent = initial;
+
+  if (photoURL) {
+    // Show Google profile photo - append size param for better quality
+    var photoSrc = photoURL.indexOf('googleusercontent') > -1
+      ? photoURL.replace(/=s\d+-c/, '=s96-c')  // force 96px Google photo
+      : photoURL;
+    if (imgEl) {
+      imgEl.src = photoSrc;
+      imgEl.style.display = 'block';
+      imgEl.onload  = function(){ letterEl && (letterEl.style.display='none'); };
+      imgEl.onerror = function(){ this.style.display='none'; letterEl && (letterEl.style.display=''); };
+    }
+    if (pdAvaImg) {
+      pdAvaImg.src = photoSrc;
+      pdAvaImg.style.display = 'block';
+      pdAvaImg.onerror = function(){ this.style.display='none'; pdAvaLetter && (pdAvaLetter.style.display=''); };
+    }
+    if (letterEl)    letterEl.style.display    = 'none';
+    if (pdAvaLetter) pdAvaLetter.style.display = 'none';
+  } else {
+    if (imgEl)       { imgEl.style.display      = 'none'; }
+    if (letterEl)    { letterEl.style.display    = ''; }
+    if (pdAvaImg)    { pdAvaImg.style.display    = 'none'; }
+    if (pdAvaLetter) { pdAvaLetter.style.display = ''; }
+  }
+  badge.style.display = 'flex';
+  // Hide the login button when user is logged in
+  var loginBtn = document.getElementById('header-login-btn');
+  if(loginBtn) loginBtn.style.display = 'none';
+}
+// Make it accessible from ES module scripts
+window.nzRenderProfile = nzRenderProfile;
+
+// Open/close the profile dropdown
+function toggleProfileDd(e) {
+  if (e) e.stopPropagation();
+  var badge = document.getElementById('user-profile-badge');
+  var dd    = document.getElementById('profileDropdown');
+  if (!dd) return;
+  var isOpen = dd.classList.toggle('open');
+  if (badge) badge.classList.toggle('open', isOpen);
+}
+// Close dropdown when clicking anywhere else on page
+document.addEventListener('click', function () {
+  var dd    = document.getElementById('profileDropdown');
+  var badge = document.getElementById('user-profile-badge');
+  if (dd)    dd.classList.remove('open');
+  if (badge) badge.classList.remove('open');
+});
+
+// Sign-out: clear cache then redirect to login
+function nzSignOut() {
+  try { localStorage.removeItem('nz_user'); sessionStorage.removeItem('nz_user'); } catch(e) {}
+  if (window._nzAuth && typeof window._nzAuth.signOut === 'function') {
+    window._nzAuth.signOut()
+      .then(function () { window.location.href = 'index.html'; })
+      .catch(function () { window.location.href = 'index.html'; });
+  } else {
+    window.location.href = 'index.html';
+  }
+}
+
+// Boot: try to load cached user immediately (before Firebase async fires)
+(function () {
+  function loadCachedUser() {
+    try {
+      var s = localStorage.getItem('nz_user') || sessionStorage.getItem('nz_user');
+      if (!s) {
+        var older = sessionStorage.getItem('user') || localStorage.getItem('user');
+        if (older) s = older;
+      }
+      if (s) {
+        var u = JSON.parse(s);
+        nzRenderProfile(
+          u.displayName || u.name || u.email || 'User',
+          u.photoURL || '',
+          u.email || ''
+        );
+      }
+    } catch (e) { /* silent */ }
+  }
+  loadCachedUser();
+  setTimeout(loadCachedUser, 800);
+  setTimeout(loadCachedUser, 2500);
+  window.addEventListener('storage', loadCachedUser);
 })();
+
 
 // ══ KANJI SEARCH & TRANSLATE ════════════════════════════════════════
 var kanjiSearchActive = false;
@@ -8124,6 +9237,658 @@ function showTranslateStatus(msg){
   });
 });
 
+
+// ═══════════════════════════════════════════
+// SENSEI AI CHAT — NihongoZen Pro
+// ═══════════════════════════════════════════
+
+var AI_PROMPTS = {
+general: `You are 先生AI (Sensei AI) — the world's most advanced Japanese language tutor, built into NihongoZen. You are warm, encouraging, and adapt to every student's level instantly.
+
+IDENTITY: Warm Japanese teacher — knowledgeable, occasionally uses Japanese expressions (やれやれ, なるほど！), genuinely excited when students improve. Always mix English AND Japanese — never pure English responses.
+
+FORMATTING:
+1. Furigana: write kanji with reading in brackets → 食べる[たべる]
+2. Romaji: include romaji for N5/N4 → (taberu)
+3. Structure: 🇯🇵 Japanese | 🔤 Romaji | 🇬🇧 English | 💡 Tip
+4. Keep responses SHORT (3-6 lines) unless asked for detail
+5. End EVERY response with a challenge or question
+
+LEVEL DETECTION (adapt instantly):
+- N5: hiragana only → simple sentences, lots of romaji
+- N4: basic kanji → moderate complexity
+- N3: mixed kanji/grammar → natural Japanese, minimal romaji
+- N2/N1: full Japanese, deep explanations
+
+GAMIFICATION: Give 🌟 +XP for good Japanese. Use praise: よくできました！/ その調子！/ 完璧！
+
+SPECIAL COMMANDS:
+- "quiz me" → 5 JLPT questions at detected level
+- "daily word" → vocabulary word with kanji, reading, meaning, 3 examples, memory tip
+- "how do I say X" → translate + teach naturally
+- "explain [grammar]" → structured grammar lesson
+
+FIRST MESSAGE: Greet with こんにちは！先生AIです。🌸 NihongoZen へようこそ！ then ask what they want to study today, offering: 📐 Grammar | 🎓 JLPT | 🔄 Translation | 💬 Conversation | 📖 Story
+
+NEVER respond in pure English. Never be harsh. Always end with challenge/question.`,
+
+grammar: `You are a precise Japanese grammar correction engine inside NihongoZen. You are 先生AI.
+
+When student sends Japanese text, analyze EVERY sentence. Respond in EXACT format:
+
+📝 Original: [their text]
+
+🔍 Analysis:
+• Error 1: [specific error] → Fix: [correction] | Rule: [simple rule]
+• Error 2: [if more errors]
+(No errors → ✅ Perfect! No errors found!)
+
+✅ Corrected: [full corrected version in Japanese]
+🔤 Reading: [furigana version: 食べる[たべる]]
+🇬🇧 Meaning: [English translation]
+
+💪 Practice: Write a similar sentence about [related topic]!
+
+Give 🌟 +XP based on effort. Be encouraging. Always explain WHY.
+If student writes in English, give them a Japanese template to try.`,
+
+jlpt: `You are a JLPT exam simulator for NihongoZen. You are 先生AI.
+
+Ask the student their target level first if not specified.
+
+For each question:
+- Show difficulty tag: [N5] / [N4] / [N3] / [N2] / [N1]
+- Format: Fill-in-blank with ＿＿, 4 MCQ options numbered 1-4, or short reading
+- Wait for student answer, then respond:
+  ✅ Correct! せいかい！(+10 XP 🌟) [brief explanation]
+  ❌ The answer is [X] — [detailed explanation with rule]
+- Track score: Score: 3/5 ⭐
+
+After 5 questions show Final Score with encouragement:
+- 5/5: 🌸 Perfect! 満点！
+- 4/5: 🌟 Excellent! Almost perfect!
+- 3/5: 👍 Good effort! がんばった！
+- Below 3: 📚 勉強しよう！ Let's review and try again!
+
+Include furigana in all questions. Make it feel like a real JLPT exam.`,
+
+translate: `You are a Japanese translation expert inside NihongoZen. You are 先生AI.
+
+For ANY translation request (English→Japanese or Japanese→English), ALWAYS give 3 versions:
+
+🔵 Casual (友達と話す時 — With friends): [casual / plain form]
+🟡 Polite (ていねい語): [polite — ます/です form]
+🔴 Formal/Keigo (敬語 — Business): [formal — only for relevant contexts]
+
+Then add:
+🌏 When to use each
+💡 Cultural note: [how Japanese people actually use this]
+🔤 Key vocab: [1-2 important words with reading + meaning]
+
+End with: "Now you try! Translate: [similar sentence]" 🌟 +5 XP!
+
+For Japanese→English: give translation + nuance + cultural context.
+Always include furigana: 食べる[たべる]`,
+
+story: `You are a collaborative Japanese story-telling tutor inside NihongoZen. You are 先生AI.
+
+Start a simple Japanese story at the student's level. Mark new grammar/vocab with ⭐:
+⭐ ところが (tokoro ga) = However — a story connector!
+
+Settings: Tokyo, Kyoto, school, sakura park, train station, café.
+Keep sentences short and level-appropriate with furigana.
+End each turn with a cliffhanger: 続きはどうなりますか？(What happens next?)
+
+When student continues:
+- Correct errors gently inline
+- Praise creativity: 面白い[おもしろい]！Great imagination!
+- Add vocabulary: ⭐ 突然[とつぜん] (totsuzen) = suddenly
+- Give 🌟 +15 XP for great storytelling!
+
+If student writes in English, translate it to Japanese and show them how.`
+};
+
+var AI_HINTS = {
+  general:   '💬 General Chat — Talk freely in Japanese or English!',
+  grammar:   '✏️ Grammar Check — Paste Japanese text to get it corrected!',
+  jlpt:      '🎓 JLPT Quiz — AI will generate exam-style questions for you!',
+  translate: '🔄 Translate — English↔Japanese with casual/polite/formal versions!',
+  story:     '📖 Story Mode — Write a Japanese story together with 先生AI!'
+};
+
+var aiHistory   = [];
+var aiMode      = 'general';
+var aiXP        = 0;
+var aiStarted   = false;
+
+// ── DRAGGABLE FAB ────────────────────────────────────────────────────
+window.addEventListener('load', function(){
+  var fab = document.getElementById('aiFab');
+  var isDragging = false;
+  var hasMoved   = false;
+  var startX, startY, origLeft, origTop;
+
+  function getPos(){
+    var r = fab.getBoundingClientRect();
+    return { left: r.left, top: r.top };
+  }
+
+  function clamp(val, min, max){ return Math.min(Math.max(val, min), max); }
+
+  function applyPos(left, top){
+    var maxL = window.innerWidth  - fab.offsetWidth;
+    var maxT = window.innerHeight - fab.offsetHeight;
+    fab.style.left   = clamp(left, 0, maxL) + 'px';
+    fab.style.top    = clamp(top,  0, maxT) + 'px';
+    fab.style.right  = 'auto';
+    fab.style.bottom = 'auto';
+  }
+
+  // ── Mouse ──
+  fab.addEventListener('mousedown', function(e){
+    e.preventDefault();
+    isDragging = true; hasMoved = false;
+    var pos = getPos();
+    startX = e.clientX; startY = e.clientY;
+    origLeft = pos.left; origTop = pos.top;
+    fab.classList.add('dragging');
+  });
+
+  document.addEventListener('mousemove', function(e){
+    if(!isDragging) return;
+    var dx = e.clientX - startX;
+    var dy = e.clientY - startY;
+    if(Math.abs(dx) > 4 || Math.abs(dy) > 4) hasMoved = true;
+    applyPos(origLeft + dx, origTop + dy);
+  });
+
+  document.addEventListener('mouseup', function(e){
+    if(!isDragging) return;
+    isDragging = false;
+    fab.classList.remove('dragging');
+    if(!hasMoved) aiOpen();
+  });
+
+  // ── Touch ──
+  fab.addEventListener('touchstart', function(e){
+    var t = e.touches[0];
+    isDragging = true; hasMoved = false;
+    var pos = getPos();
+    startX = t.clientX; startY = t.clientY;
+    origLeft = pos.left; origTop = pos.top;
+    fab.classList.add('dragging');
+  }, { passive:true });
+
+  fab.addEventListener('touchmove', function(e){
+    if(!isDragging) return;
+    e.preventDefault();
+    var t = e.touches[0];
+    var dx = t.clientX - startX;
+    var dy = t.clientY - startY;
+    if(Math.abs(dx) > 4 || Math.abs(dy) > 4) hasMoved = true;
+    applyPos(origLeft + dx, origTop + dy);
+  }, { passive:false });
+
+  fab.addEventListener('touchend', function(){
+    isDragging = false;
+    fab.classList.remove('dragging');
+    if(!hasMoved) aiOpen();
+  });
+
+  // Keep inside window on resize
+  window.addEventListener('resize', function(){
+    var r = fab.getBoundingClientRect();
+    applyPos(r.left, r.top);
+  });
+});
+
+function aiOpen(){
+  document.getElementById('aiOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  if(!aiStarted){ aiStarted = true; aiGreet(); }
+  setTimeout(function(){ document.getElementById('aiInp').focus(); aiScrollBottom(); }, 400);
+}
+
+function aiClose(){
+  document.getElementById('aiOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Close when clicking the backdrop
+document.getElementById('aiOverlay').addEventListener('click', function(e){
+  if(e.target === this) aiClose();
+});
+
+function aiSetMode(mode, el){
+  aiMode = mode;
+  document.querySelectorAll('.ai-mode-btn').forEach(function(b){ b.classList.remove('active'); });
+  el.classList.add('active');
+  document.getElementById('aiHint').textContent = AI_HINTS[mode];
+  var names = { general:'💬 Chat', grammar:'✏️ Grammar', jlpt:'🎓 JLPT', translate:'🔄 Translate', story:'📖 Story' };
+  aiSysMsg('Mode → ' + names[mode]);
+}
+
+function aiGreet(){
+  var msg = "こんにちは！先生AIです。🌸\nNihongoZen へようこそ！(Welcome to NihongoZen!)\n\nI'm your personal AI Japanese tutor — warm, patient, and here to take you from beginner to fluency!\n\n今日は何を勉強したいですか？\n(Kyō wa nani o benkyō shitai desu ka?)\nWhat would you like to study today?\n\nChoose a mode above ☝️ or just type freely:\n📐 Grammar | 🎓 JLPT | 🔄 Translation | 💬 Conversation | 📖 Story";
+  aiAppend('ai', msg);
+  aiHistory.push({ role:'assistant', content: msg });
+}
+
+function aiAppend(role, text){
+  var msgs = document.getElementById('aiMsgs');
+  var row = document.createElement('div');
+  row.className = 'ai-msg-row' + (role === 'user' ? ' u' : '');
+
+  var ava = document.createElement('div');
+  ava.className = 'ai-msg-ava';
+  ava.textContent = role === 'user' ? '👤' : '🌸';
+
+  var bub = document.createElement('div');
+  bub.className = 'ai-bubble';
+  bub.textContent = text;
+
+  row.appendChild(ava);
+  row.appendChild(bub);
+  msgs.appendChild(row);
+  aiScrollBottom();
+  return bub;
+}
+
+function aiSysMsg(text){
+  var msgs = document.getElementById('aiMsgs');
+  var d = document.createElement('div');
+  d.className = 'ai-sys-msg';
+  d.textContent = '— ' + text + ' —';
+  msgs.appendChild(d);
+  aiScrollBottom();
+}
+
+function aiShowTyping(){
+  var msgs = document.getElementById('aiMsgs');
+  var row = document.createElement('div');
+  row.className = 'ai-msg-row'; row.id = 'aiTypRow';
+  var ava = document.createElement('div');
+  ava.className = 'ai-msg-ava'; ava.textContent = '🌸';
+  var bub = document.createElement('div');
+  bub.className = 'ai-typing';
+  bub.innerHTML = '<div class="ai-tdot"></div><div class="ai-tdot"></div><div class="ai-tdot"></div>';
+  row.appendChild(ava); row.appendChild(bub);
+  msgs.appendChild(row);
+  aiScrollBottom();
+}
+
+function aiHideTyping(){
+  var t = document.getElementById('aiTypRow');
+  if(t) t.remove();
+}
+
+function aiScrollBottom(){
+  var msgs = document.getElementById('aiMsgs');
+  setTimeout(function(){ msgs.scrollTop = msgs.scrollHeight; }, 60);
+}
+
+function aiAddXP(text){
+  var m = text.match(/\+(\d+)\s*XP/i);
+  if(m){ aiXP += parseInt(m[1]); document.getElementById('aiXpPill').textContent = '⭐ ' + aiXP + ' XP'; }
+}
+
+async function aiSend(){
+  var inp = document.getElementById('aiInp');
+  var btn = document.getElementById('aiSendBtn');
+  var txt = inp.value.trim();
+  if(!txt) return;
+
+  inp.value = ''; inp.disabled = true; btn.disabled = true;
+  aiAppend('user', txt);
+  aiHistory.push({ role:'user', content: txt });
+
+  var histSlice = aiHistory.slice(-10);
+  aiShowTyping();
+
+  try {
+    var resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: AI_PROMPTS[aiMode],
+        messages: histSlice
+      })
+    });
+    var data = await resp.json();
+    aiHideTyping();
+
+    if(data.content && data.content.length){
+      var reply = data.content.filter(function(b){ return b.type==='text'; }).map(function(b){ return b.text; }).join('\n');
+      aiAppend('ai', reply);
+      aiHistory.push({ role:'assistant', content: reply });
+      aiAddXP(reply);
+    } else {
+      aiAppend('ai', 'すみません！(Sumimasen!) Something went wrong. Please try again. 🙏');
+    }
+  } catch(err) {
+    aiHideTyping();
+    aiAppend('ai', 'ネットワークエラー。(Network error) Please check your connection. 🌸');
+  }
+
+  inp.disabled = false; btn.disabled = false; inp.focus();
+}
+
 </script>
+
+<!-- ═══ SENSEI AI FLOATING BUTTON + CHAT ═══ -->
+<button class="ai-fab" id="aiFab" title="先生AI — Japanese Tutor">
+  <div class="ai-fab-pulse"></div>
+  <span class="ai-fab-icon">🌸</span>
+  <span class="ai-fab-txt">先生AI</span>
+</button>
+
+<div class="ai-overlay" id="aiOverlay">
+  <div class="ai-panel" id="aiPanel">
+
+    <!-- Header -->
+    <div class="ai-head">
+      <div class="ai-head-left">
+        <div class="ai-head-ava">🌸</div>
+        <div>
+          <div class="ai-head-name">先生AI — Sensei AI</div>
+          <div class="ai-head-sub">NihongoZen Pro Tutor ✨</div>
+        </div>
+      </div>
+      <div class="ai-head-right">
+        <div class="ai-xp-pill" id="aiXpPill">⭐ 0 XP</div>
+        <button class="ai-close" onclick="aiClose()">✕</button>
+      </div>
+    </div>
+
+    <!-- Mode Tabs -->
+    <div class="ai-modes">
+      <button class="ai-mode-btn active" onclick="aiSetMode('general',this)">
+        <span class="m-ico">💬</span><span class="m-lbl">Chat</span>
+      </button>
+      <button class="ai-mode-btn" onclick="aiSetMode('grammar',this)">
+        <span class="m-ico">✏️</span><span class="m-lbl">Grammar</span>
+      </button>
+      <button class="ai-mode-btn" onclick="aiSetMode('jlpt',this)">
+        <span class="m-ico">🎓</span><span class="m-lbl">JLPT</span>
+      </button>
+      <button class="ai-mode-btn" onclick="aiSetMode('translate',this)">
+        <span class="m-ico">🔄</span><span class="m-lbl">Translate</span>
+      </button>
+      <button class="ai-mode-btn" onclick="aiSetMode('story',this)">
+        <span class="m-ico">📖</span><span class="m-lbl">Story</span>
+      </button>
+    </div>
+
+    <!-- Messages -->
+    <div class="ai-msgs" id="aiMsgs"></div>
+
+    <!-- Hint -->
+    <div class="ai-hint" id="aiHint">💬 General Chat — Talk freely in Japanese or English!</div>
+
+    <!-- Input -->
+    <div class="ai-input-row">
+      <input class="ai-inp" id="aiInp" type="text"
+        placeholder="日本語で話しかけて！/ Type here..."
+        onkeydown="if(event.key==='Enter')aiSend()"/>
+      <button class="ai-send" id="aiSendBtn" onclick="aiSend()">送</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- JLPT Practice + Firebase Auth module -->
+<script>
+function openJLPTPractice(e) {
+  if (e) e.preventDefault();
+  if (typeof showSection === 'function') showSection('jlpt-practice');
+}
+
+// ── JLPT PRACTICE QUESTION DATA ──────────────────────────────────
+var jpQuestions = {
+  N5: {
+    vocab: [
+      { type:"Vocabulary", context:null, text:'この <span class="jp-blank">（　　）</span> はいくらですか。', reading:null, options:['ほん','くるま','りんご','ねこ'], answer:1, explanation:'「この（くるま）はいくらですか」= "How much is this car?" — くるま (car) is most natural in a price-asking context.' },
+      { type:"Vocabulary", context:null, text:'毎朝、<span class="jp-blank">（　　）</span>を食べます。', reading:null, options:['あさごはん','ゆうごはん','おちゃ','みず'], answer:0, explanation:'「毎朝、あさごはんを食べます」= "I eat breakfast every morning."' },
+      { type:"Vocabulary", context:null, text:'私は<span class="jp-blank">（　　）</span>が好きです。', reading:null, options:['ねる','おんがく','たかい','あるく'], answer:1, explanation:'「おんがく（音楽）が好きです」= "I like music." Only nouns follow が好き.' },
+      { type:"Vocabulary", context:null, text:'きのう、図書館で<span class="jp-blank">（　　）</span>を借りました。', reading:null, options:['ほん','くつ','かさ','でんわ'], answer:0, explanation:'「図書館でほん（本）を借りました」= "I borrowed a book from the library."' },
+      { type:"Vocabulary", context:null, text:'お<span class="jp-blank">（　　）</span>が痛いので、病院へ行きます。', reading:null, options:['なか','あたま','て','め'], answer:1, explanation:'「おあたまが痛い」= "My head hurts" — classic example for going to hospital.' }
+    ],
+    grammar: [
+      { type:"Grammar", context:null, text:'わたしは毎日、学校<span class="jp-blank">（　　）</span>行きます。', reading:null, options:['を','に','で','が'], answer:1, explanation:'「学校に行く」uses に to indicate destination. に marks where you are going.' },
+      { type:"Grammar", context:null, text:'テストの前に、よく<span class="jp-blank">（　　）</span>。', reading:null, options:['べんきょうします','べんきょうしません','べんきょうしました','べんきょうしていません'], answer:0, explanation:'「よくべんきょうします」= "I study hard." Present habit form.' },
+      { type:"Grammar", context:null, text:'あのレストランは<span class="jp-blank">（　　）</span>広くて、きれいです。', reading:null, options:['とても','ちょっと','あまり','まだ'], answer:0, explanation:'「とても広くて、きれいです」= "It is very spacious and beautiful."' },
+      { type:"Grammar", context:null, text:'日本語<span class="jp-blank">（　　）</span>勉強しています。', reading:null, options:['を','に','が','は'], answer:0, explanation:'「日本語を勉強する」uses を for the object of study.' },
+      { type:"Grammar", context:null, text:'明日、友達<span class="jp-blank">（　　）</span>会います。', reading:null, options:['と','に','で','が'], answer:1, explanation:'「友達に会う」= "meet a friend" — に marks the person you meet.' }
+    ],
+    kanji: [
+      { type:"Kanji Reading", context:null, text:'ここから見る<span class="jp-underline">夕日</span>はきれいだ。', reading:null, options:['ゆび','ゆひ','ゆうび','ゆうひ'], answer:3, explanation:'夕日 = ゆうひ (sunset). "The sunset seen from here is beautiful."' },
+      { type:"Kanji Reading", context:null, text:'今日は<span class="jp-underline">天気</span>がいいです。', reading:null, options:['てんき','あめ','はれ','たいよう'], answer:0, explanation:'天気 = てんき (weather). "Today the weather is nice."' },
+      { type:"Kanji Reading", context:null, text:'あの<span class="jp-underline">山</span>はとても高い。', reading:null, options:['やま','かわ','はな','もり'], answer:0, explanation:'山 = やま (mountain). "That mountain is very tall."' },
+      { type:"Kanji Reading", context:null, text:'毎<span class="jp-underline">朝</span>、ジョギングをします。', reading:null, options:['あさ','ひる','よる','ばん'], answer:0, explanation:'朝 = あさ (morning). "Every morning, I go jogging."' },
+      { type:"Kanji Reading", context:null, text:'<span class="jp-underline">父</span>は会社員です。', reading:null, options:['はは','ちち','あに','いもうと'], answer:1, explanation:'父 = ちち (my father). "My father is a company employee."' }
+    ],
+    reading: [
+      { type:"Reading", context:null, text:null, reading:'田中さんは毎朝６時に起きます。まず、シャワーを浴びて、朝ごはんを食べます。朝ごはんはいつもパンとコーヒーです。それから、バスで会社に行きます。<br><br><b>問い：</b>田中さんは毎朝、何で会社へ行きますか。', options:['電車で行きます','バスで行きます','車で行きます','歩いて行きます'], answer:1, explanation:'「バスで会社に行きます」= "goes to work by bus."' },
+      { type:"Reading", context:null, text:null, reading:'きのう、友達と映画を見に行きました。映画はとても面白かったです。映画の後で、レストランで晩ごはんを食べました。レストランはちょっと高かったですが、料理はおいしかったです。<br><br><b>問い：</b>レストランについて、正しいものはどれですか。', options:['安かった','料理がまずかった','料理はおいしかった','映画館の中にあった'], answer:2, explanation:'「料理はおいしかったです」= "The food was delicious."' },
+      { type:"Reading", context:null, text:null, reading:'<b>図書館からのお知らせ</b><br>今月の土曜日と日曜日は図書館を使えません。来月からまた開きます。本を返す人は、正面玄関のポストに入れてください。<br><br><b>問い：</b>今月の土日、図書館はどうですか。', options:['開いています','閉まっています','本が借りられます','ポストがありません'], answer:1, explanation:'「今月の土曜日と日曜日は図書館を使えません」→ Closed.' },
+      { type:"Reading", context:null, text:null, reading:'山本さんは今、駅前のコンビニで働いています。仕事は朝9時から午後5時までです。休みは火曜日と木曜日です。<br><br><b>問い：</b>山本さんの休みの日はいつですか。', options:['月曜日と水曜日','火曜日と木曜日','土曜日と日曜日','毎日働いています'], answer:1, explanation:'「休みは火曜日と木曜日です」= "Days off are Tuesday and Thursday."' },
+      { type:"Reading", context:null, text:null, reading:'日本では、春になると桜の花が咲きます。人々は公園や川沿いで花見をします。桜の季節は短く、約２週間ほどで散ってしまいます。<br><br><b>問い：</b>桜の花が咲く季節はいつですか。', options:['夏','秋','冬','春'], answer:3, explanation:'「春になると桜の花が咲きます」= "When spring comes, cherry blossoms bloom."' }
+    ]
+  },
+  N4: {
+    vocab: [
+      { type:"Vocabulary", context:null, text:'ホテルで海側の部屋を<span class="jp-blank">（　　）</span>したが、空いていなかった。', reading:null, options:['納得','承知','希望','準備'], answer:2, explanation:'「希望する」= to wish/request. "I requested an ocean-view room."' },
+      { type:"Vocabulary", context:null, text:'彼女はいつも<span class="jp-blank">（　　）</span>な服を着ている。', reading:null, options:['おだやか','はで','じみ','まじめ'], answer:1, explanation:'「はで（派手）な服」= "flashy/showy clothes".' },
+      { type:"Vocabulary", context:null, text:'試験に合格できて、本当に<span class="jp-blank">（　　）</span>した。', reading:null, options:['あんしん','しんぱい','きんちょう','しつぼう'], answer:0, explanation:'「あんしん（安心）した」= "felt relieved". Passing → relief.' },
+      { type:"Vocabulary", context:null, text:'彼は何でも<span class="jp-blank">（　　）</span>に考えすぎる。', reading:null, options:['しんけん','ふくざつ','かんたん','ていねい'], answer:0, explanation:'「しんけん（真剣）に考える」= "think seriously/earnestly".' },
+      { type:"Vocabulary", context:null, text:'この映画は<span class="jp-blank">（　　）</span>感動的だった。', reading:null, options:['とても','あまり','まだ','もっと'], answer:0, explanation:'「とても感動的だった」= "It was very moving/touching."' }
+    ],
+    grammar: [
+      { type:"Grammar", context:null, text:'子どもの頃、よく川で魚を<span class="jp-blank">（　　）</span>。', reading:null, options:['つっています','つりました','つっていました','つります'], answer:2, explanation:'「よく〜していました」= habitual past action. "I often used to fish."' },
+      { type:"Grammar", context:null, text:'病気に<span class="jp-blank">（　　）</span>、無理をしないでください。', reading:null, options:['ならないように','なるために','なったら','なっても'], answer:0, explanation:'「〜ないように」= in order to avoid. "Please don't push yourself so you don't get sick."' },
+      { type:"Grammar", context:null, text:'宿題が多くて、<span class="jp-blank">（　　）</span>終わらない。', reading:null, options:['なかなか','だいたい','ほとんど','たいてい'], answer:0, explanation:'「なかなか〜ない」= "not easily, won't finish no matter what".' },
+      { type:"Grammar", context:null, text:'この仕事は私<span class="jp-blank">（　　）</span>できます。', reading:null, options:['だけが','しかに','ほどが','までが'], answer:0, explanation:'「私だけができます」= "Only I can do this work."' },
+      { type:"Grammar", context:null, text:'友達に会える<span class="jp-blank">（　　）</span>、早めに出発した。', reading:null, options:['ように','ために','らしく','そうで'], answer:1, explanation:'「〜ために」= in order to. "I departed early in order to meet my friend."' }
+    ],
+    kanji: [
+      { type:"Kanji Reading", context:null, text:'彼女は<span class="jp-underline">親切</span>な人です。', reading:null, options:['しんせつ','しんきり','おやきり','おやせつ'], answer:0, explanation:'親切 = しんせつ (kind). "She is a kind person."' },
+      { type:"Kanji Reading", context:null, text:'先生に<span class="jp-underline">質問</span>があります。', reading:null, options:['しちもん','しつもん','しつぶん','しちぶん'], answer:1, explanation:'質問 = しつもん (question). "I have a question for the teacher."' },
+      { type:"Kanji Reading", context:null, text:'今日は<span class="jp-underline">特別</span>な日です。', reading:null, options:['とくべつ','とくべち','とっぺつ','どくべつ'], answer:0, explanation:'特別 = とくべつ (special). "Today is a special day."' },
+      { type:"Kanji Reading", context:null, text:'彼は<span class="jp-underline">医者</span>になりたい。', reading:null, options:['いしゃ','いじゃ','いしゃあ','いしゅ'], answer:0, explanation:'医者 = いしゃ (doctor). "He wants to become a doctor."' },
+      { type:"Kanji Reading", context:null, text:'電車の<span class="jp-underline">運転</span>が好きです。', reading:null, options:['うんてん','うんでん','うてん','うんじゅう'], answer:0, explanation:'運転 = うんてん (driving/operation).' }
+    ],
+    reading: [
+      { type:"Reading", context:null, text:null, reading:'田中さんは毎週土曜日にテニスを習っています。先生はフランス人で、日本語がとても上手です。<br><br><b>問い：</b>田中さんのテニスの先生はどんな人ですか。', options:['日本人で英語が上手','フランス人で日本語が上手','フランス人でフランス語しか話せない','日本人でフランス語が上手'], answer:1, explanation:'「先生はフランス人で、日本語がとても上手です」' },
+      { type:"Reading", context:null, text:null, reading:'日本では、春になると桜の花が咲きます。人々は公園や川沿いで花見をします。桜の季節は短く、約２週間ほどで散ってしまいます。<br><br><b>問い：</b>花見はどこでしますか。', options:['学校や会社で','公園や川沿いで','映画館や図書館で','山や海で'], answer:1, explanation:'「公園や川沿いで花見をします」= "People enjoy hanami in parks and along rivers."' },
+      { type:"Reading", context:null, text:null, reading:'ここ数年、日本でもカフェで仕事をする人が増えています。ノートパソコンを持って、コーヒーを飲みながら仕事をするスタイルが人気です。<br><br><b>問い：</b>この文の内容と合っているものはどれですか。', options:['カフェで仕事する人は減っている','Wi-Fiのあるカフェは少ない','カフェで仕事するスタイルが人気','コンセントがあるカフェはない'], answer:2, explanation:'「コーヒーを飲みながら仕事をするスタイルが人気です」' },
+      { type:"Reading", context:null, text:null, reading:'<b>市民プールのお知らせ</b><br>夏季（7月・8月）は毎日開館します。月曜日は清掃のため午後のみ（13時〜）になります。<br><br><b>問い：</b>月曜日に市民プールに行くなら、何時から入れますか。', options:['午前9時から','午後1時から','午後8時まで','入れない'], answer:1, explanation:'「月曜日は午後のみ（13時〜）」= from 1 PM.' },
+      { type:"Reading", context:null, text:null, reading:'山田さんへ。午後3時ごろ、鈴木さんという方から電話がありました。明日の会議の時間が変わったそうです。午前10時から午後2時になりました。<br><br><b>問い：</b>会議は何時になりましたか。', options:['午前10時','午後3時','午後2時','午前2時'], answer:0, explanation:'「午前10時から」→ the meeting starts at 10 AM.' }
+    ]
+  }
+};
+['N3','N2','N1'].forEach(function(lv){ jpQuestions[lv] = JSON.parse(JSON.stringify(jpQuestions.N4)); });
+
+// ── JLPT PRACTICE STATE ──────────────────────────────────────────
+var jpLevel = 'N5', jpCat = 'vocab', jpIdx = 0, jpScore = 0, jpAnswered = false, jpQs = [];
+
+function jpSelectLevel(lv) {
+  jpLevel = lv;
+  var home  = document.getElementById('jpHomeScreen');
+  var pract = document.getElementById('jpPracticeScreen');
+  if(home)  home.style.display  = 'none';
+  if(pract) pract.style.display = 'block';
+  document.querySelectorAll('.jp-lv-tab').forEach(function(t){
+    t.classList.toggle('active', t.textContent.trim() === lv);
+  });
+  // Reset category to vocab on new level
+  jpCat = 'vocab';
+  document.querySelectorAll('.jp-cat-tab').forEach(function(t,i){ t.classList.toggle('active', i===0); });
+  jpStartQuiz();
+}
+function jpSelectCat(cat, el) {
+  jpCat = cat;
+  document.querySelectorAll('.jp-cat-tab').forEach(function(t){ t.classList.remove('active'); });
+  el.classList.add('active');
+  jpStartQuiz();
+}
+function jpStartQuiz() {
+  jpQs = (jpQuestions[jpLevel] && jpQuestions[jpLevel][jpCat]) || jpQuestions.N5.vocab;
+  jpIdx = 0; jpScore = 0; jpAnswered = false;
+
+  // Hide score screen
+  var ss = document.getElementById('jpScoreScreen');
+  if(ss) { ss.classList.remove('show'); ss.style.display = 'none'; }
+
+  // Show all quiz elements explicitly
+  var ids = { jpQCard:'block', jpOptsDiv:'flex', jpProgressFill:'block', jpProgressLbl:'block' };
+  Object.keys(ids).forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.style.display = ids[id];
+  });
+
+  // Reset feedback
+  var fb = document.getElementById('jpFeedback');
+  if(fb) { fb.style.display = 'none'; fb.className = 'jp-feedback'; }
+
+  // Show btn row and progress bar (query inside practice screen only)
+  var ps = document.getElementById('jpPracticeScreen');
+  if(ps) {
+    var br = ps.querySelector('.jp-btn-row');
+    var pb = ps.querySelector('.jp-progress-bar');
+    if(br) br.style.display = 'flex';
+    if(pb) pb.style.display = 'block';
+  }
+  jpShowQ();
+}
+function jpShowQ() {
+  if (jpIdx >= jpQs.length) { jpShowScore(); return; }
+  jpAnswered = false;
+  var q = jpQs[jpIdx], tot = jpQs.length;
+  var pct = (jpIdx / tot) * 100;
+  document.getElementById('jpProgressFill').style.width = pct + '%';
+  document.getElementById('jpProgressLbl').textContent = 'Question ' + (jpIdx+1) + ' / ' + tot;
+  document.getElementById('jpQBadge').textContent = q.type;
+  document.getElementById('jpCounter').textContent = (jpIdx+1) + '/' + tot;
+  var ctx = document.getElementById('jpQContext');
+  if (q.reading) { ctx.innerHTML = '<div class="jp-passage">' + q.reading + '</div>'; ctx.style.display = 'block'; }
+  else if (q.context) { ctx.innerHTML = '<div class="jp-context">' + q.context + '</div>'; ctx.style.display = 'block'; }
+  else { ctx.innerHTML = ''; ctx.style.display = 'none'; }
+  var qt = document.getElementById('jpQText');
+  if (q.text) { qt.innerHTML = q.text; qt.style.display = 'block'; } else { qt.style.display = 'none'; }
+  var od = document.getElementById('jpOptsDiv'); od.innerHTML = '';
+  q.options.forEach(function(opt, i) {
+    var btn = document.createElement('button');
+    btn.className = 'jp-opt';
+    btn.innerHTML = '<span class="jp-opt-num">' + (i+1) + '</span><span>' + opt + '</span>';
+    btn.onclick = function(){ jpAnswer(i); };
+    od.appendChild(btn);
+  });
+  var fb = document.getElementById('jpFeedback'); fb.className = 'jp-feedback';
+  var nb = document.getElementById('jpBtnNext'); nb.disabled = true;
+}
+function jpAnswer(idx) {
+  if (jpAnswered) return; jpAnswered = true;
+  var q = jpQs[jpIdx];
+  document.querySelectorAll('.jp-opt').forEach(function(btn, i) {
+    btn.classList.add('jp-disabled');
+    if (i === q.answer) btn.classList.add('jp-correct');
+    else if (i === idx && idx !== q.answer) btn.classList.add('jp-wrong');
+  });
+  var ok = idx === q.answer; if(ok) jpScore++;
+  var fb = document.getElementById('jpFeedback');
+  fb.className = 'jp-feedback show ' + (ok ? 'ok' : 'bad');
+  document.getElementById('jpFbTitle').textContent = ok ? '✅ Correct! せいかい！' : '❌ Incorrect. Answer: ' + q.options[q.answer];
+  document.getElementById('jpFbExp').textContent = q.explanation;
+  document.getElementById('jpBtnNext').disabled = false;
+}
+function jpNext()  { jpIdx++; jpShowQ(); }
+function jpSkip()  { jpIdx++; jpShowQ(); }
+function jpRetry() {
+  jpStartQuiz();
+}
+function jpShowScore() {
+  var ss = document.getElementById('jpScoreScreen');
+  if(ss){ ss.classList.add('show'); ss.style.display = 'block'; }
+  var hideIds = ['jpQCard','jpOptsDiv','jpFeedback'];
+  hideIds.forEach(function(id){ var el=document.getElementById(id); if(el) el.style.display='none'; });
+  var ps = document.getElementById('jpPracticeScreen');
+  if(ps){ var br=ps.querySelector('.jp-btn-row'); if(br) br.style.display='none'; }
+  var pct = Math.round((jpScore / jpQs.length) * 100);
+  document.getElementById('jpScoreNum').textContent = jpScore;
+  document.getElementById('jpScoreLbl').textContent = '/ ' + jpQs.length;
+  var title, sub;
+  if(pct===100){title='🌸 Perfect! 満点！';sub='Amazing! You mastered this section!';}
+  else if(pct>=80){title='🌟 Excellent! すばらしい！';sub='Great job! Keep practicing!';}
+  else if(pct>=60){title='👍 Good effort! がんばった！';sub='You're making progress! Review the wrong ones.';}
+  else{title='📚 Keep Studying! 勉強しよう！';sub='Review the material and try again!';}
+  document.getElementById('jpScoreTitle').textContent = title;
+  document.getElementById('jpScoreSub').textContent = sub;
+  document.getElementById('jpProgressFill').style.width = '100%';
+  document.getElementById('jpProgressLbl').textContent = 'Completed! Score: ' + jpScore + '/' + jpQs.length + ' (' + pct + '%)';
+}
+
+// Petals for JLPT section
+(function(){
+  var container = document.getElementById('jpPetals');
+  if(!container) return;
+  for(var i=0;i<16;i++){
+    var p = document.createElement('div'); p.className='jp-petal';
+    p.style.left = Math.random()*100+'%';
+    p.style.width = (8+Math.random()*9)+'px';
+    p.style.height = (8+Math.random()*9)+'px';
+    p.style.animationDuration = (7+Math.random()*10)+'s';
+    p.style.animationDelay = (Math.random()*12)+'s';
+    p.style.opacity = 0.25+Math.random()*0.45;
+    container.appendChild(p);
+  }
+})();
+</script>
+
+<script type="module">
+  import { initializeApp }
+    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+  import { getAuth, onAuthStateChanged }
+    from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+
+  const cfg = {
+    apiKey:            "AIzaSyCP2Uwo1lx996q0l3nkC7RhAesVuIHEXiA",
+    authDomain:        "nihongo-zen-cd97d.firebaseapp.com",
+    projectId:         "nihongo-zen-cd97d",
+    storageBucket:     "nihongo-zen-cd97d.firebasestorage.app",
+    messagingSenderId: "513320956483",
+    appId:             "1:513320956483:web:a1069825e0df3587f65af6"
+  };
+
+  const app  = initializeApp(cfg);
+  const auth = getAuth(app);
+
+  // Expose auth so the non-module nzSignOut() can call auth.signOut()
+  window._nzAuth = auth;
+
+  onAuthStateChanged(auth, (firebaseUser) => {
+    if (firebaseUser) {
+      const uData = {
+        displayName: firebaseUser.displayName || firebaseUser.email || 'User',
+        email:       firebaseUser.email       || '',
+        photoURL:    firebaseUser.photoURL    || ''  // Google photo URL
+      };
+      // Persist so page-reload also shows the badge
+      try { localStorage.setItem('nz_user', JSON.stringify(uData)); } catch(e) {}
+
+      // Call the render function (defined in regular script above)
+      if (typeof window.nzRenderProfile === 'function') {
+        window.nzRenderProfile(uData.displayName, uData.photoURL, uData.email);
+      }
+    } else {
+      // Logged out — hide badge and clear cache
+      const badge = document.getElementById('user-profile-badge');
+      if (badge) badge.style.display = 'none';
+      try { localStorage.removeItem('nz_user'); } catch(e) {}
+    }
+  });
+</script>
+
 </body>
 </html>
