@@ -1,10 +1,5 @@
-// ============================================================
-// NihongoZen — auth.js
-// Handles: Google login, Email link login
-// After login: redirects to index.html (main dashboard)
-// ============================================================
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
 import {
   getAuth,
   GoogleAuthProvider,
@@ -14,88 +9,97 @@ import {
   signInWithEmailLink
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-// ── Firebase Config ──────────────────────────────────────────
+// 🔥 FIREBASE CONFIG
 const firebaseConfig = {
-  apiKey:            "AIzaSyCP2Uwo1lx996q0l3nkC7RhAesVuIHEXiA",
-  authDomain:        "nihongo-zen-cd97d.firebaseapp.com",
-  projectId:         "nihongo-zen-cd97d",
-  storageBucket:     "nihongo-zen-cd97d.firebasestorage.app",
+  apiKey: "AIzaSyCP2Uwo1lx996q0l3nkC7RhAesVuIHEXiA",
+  authDomain: "nihongo-zen-cd97d.firebaseapp.com",
+  projectId: "nihongo-zen-cd97d",
+  storageBucket: "nihongo-zen-cd97d.firebasestorage.app",
   messagingSenderId: "513320956483",
-  appId:             "1:513320956483:web:a1069825e0df3587f65af6",
-  measurementId:     "G-1WTJ5ML3R2"
+  appId: "1:513320956483:web:a1069825e0df3587f65af6",
+  measurementId: "G-1WTJ5ML3R2"
 };
 
-const app      = initializeApp(firebaseConfig);
-const auth     = getAuth(app);
+// ✅ INIT
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-// Always prompt account selection on Google login
-provider.setCustomParameters({ prompt: "select_account" });
 
-// ── DESTINATION after login ──────────────────────────────────
-const DASHBOARD = "index.html";
+// ==============================
+// 🔵 GOOGLE LOGIN (OLD + NEW MERGED)
+// ==============================
 
-// ── Google Login ─────────────────────────────────────────────
-// Supports both button IDs used across login page versions
-["googleLogin", "loginBtn"].forEach(id => {
-  document.getElementById(id)?.addEventListener("click", async () => {
-    try {
-      await signInWithPopup(auth, provider);
-      window.location.replace(DASHBOARD);
-    } catch (err) {
-      console.error("Google login error:", err);
-      showLoginError(err.message);
-    }
-  });
+// for new button (googleLogin)
+document.getElementById("googleLogin")?.addEventListener("click", async () => {
+  try {
+    await signInWithPopup(auth, provider);
+    window.location.href = "dashboard.html";
+  } catch (err) {
+    alert(err.message);
+  }
 });
 
-// ── Email Link Login — Step 1: Send link ─────────────────────
+// for old button (loginBtn)
+document.getElementById("loginBtn")?.addEventListener("click", async () => {
+  try {
+    await signInWithPopup(auth, provider);
+    window.location.href = "dashboard.html";
+  } catch (error) {
+    console.error(error);
+    alert(error.message);
+  }
+});
+
+
+// ==============================
+// 🟡 EMAIL LINK LOGIN
+// ==============================
+
 const actionCodeSettings = {
-  url:              window.location.origin + "/" + DASHBOARD,
-  handleCodeInApp:  true
+  url: window.location.href,
+  handleCodeInApp: true
 };
 
 document.getElementById("emailLogin")?.addEventListener("click", async () => {
-  const email = document.getElementById("emailInput")?.value?.trim();
-  if (!email) return showLoginError("Please enter your email address.");
+  const email = document.getElementById("emailInput")?.value;
+
+  if (!email) return alert("Enter email");
 
   try {
     await sendSignInLinkToEmail(auth, email, actionCodeSettings);
-    localStorage.setItem("nz_emailForSignIn", email);
-    showLoginSuccess("Login link sent! Check your inbox.");
+    localStorage.setItem("emailForSignIn", email);
+    alert("Login link sent to your email!");
   } catch (err) {
-    console.error("Email link error:", err);
-    showLoginError(err.message);
+    alert(err.message);
   }
 });
 
-// ── Email Link Login — Step 2: Complete sign-in ──────────────
+
+// ==============================
+// ✅ COMPLETE EMAIL LOGIN
+// ==============================
+
 if (isSignInWithEmailLink(auth, window.location.href)) {
-  let email = localStorage.getItem("nz_emailForSignIn");
+  let email = localStorage.getItem("emailForSignIn");
+
   if (!email) {
-    email = window.prompt("Please confirm your email address:");
+    email = prompt("Enter your email again");
   }
-  if (email) {
-    signInWithEmailLink(auth, email, window.location.href)
-      .then(() => {
-        localStorage.removeItem("nz_emailForSignIn");
-        window.location.replace(DASHBOARD);
-      })
-      .catch(err => showLoginError(err.message));
-  }
+
+  signInWithEmailLink(auth, email, window.location.href)
+    .then(() => {
+      localStorage.removeItem("emailForSignIn");
+      window.location.href = "dashboard.html";
+    })
+    .catch(err => alert(err.message));
 }
 
-// ── UI helpers ───────────────────────────────────────────────
-function showLoginError(msg) {
-  const el = document.getElementById("login-error") || document.getElementById("error-msg");
-  if (el) { el.textContent = msg; el.style.display = "block"; }
-  else alert(msg);
-}
-function showLoginSuccess(msg) {
-  const el = document.getElementById("login-success") || document.getElementById("success-msg");
-  if (el) { el.textContent = msg; el.style.display = "block"; }
-  else alert(msg);
-}
 
-// ── Navigation ───────────────────────────────────────────────
-window.goSignup = () => { window.location.href = "signup.html"; };
+// ==============================
+// 🔗 NAVIGATION
+// ==============================
+
+window.goSignup = () => {
+  window.location.href = "signup.html";
+};
