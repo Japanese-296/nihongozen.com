@@ -4,8 +4,6 @@
   <meta charset="UTF-8"/>
   <meta name="google" content="notranslate"/>
   <meta name="google-translate-customization" content="no"/>
-  <!-- Auth Guard — must load first, protects this page -->
-  <script type="module" src="auth-guard.js"></script>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>NihongoZen — Learn Japanese</title>
   <link rel="icon" href="https://files.catbox.moe/fxwgtd.png"/>
@@ -335,61 +333,11 @@ main { flex:1; padding:2rem; overflow-x:hidden; max-width:100%; }
 .l-progress-wrap { background:#fff; border:1px solid var(--l-border); border-radius:var(--l-radius); padding:1.1rem; margin-top:1.2rem; }
 .l-progress-bar  { height:6px; background:var(--l-bg3); border-radius:4px; overflow:hidden; margin-top:.4rem; }
 .l-progress-fill { height:100%; border-radius:4px; background:linear-gradient(90deg,var(--l-pink),var(--l-pink-dark)); transition:width .7s cubic-bezier(.4,0,.2,1); }
-/* ── KANA GRID — mobile-first ── */
-.l-kana-grid {
-  display:grid;
-  grid-template-columns: repeat(5, 1fr);   /* 5 columns — matches kana rows */
-  gap:7px;
-  margin-bottom:1.4rem;
-}
-@media(max-width:480px){
-  .l-kana-grid { grid-template-columns: repeat(5, 1fr); gap:5px; }
-}
-.l-kana-cell {
-  background:#fff; border:1.5px solid var(--l-border);
-  border-radius:12px; padding:.7rem .3rem .5rem;
-  text-align:center; cursor:pointer; user-select:none;
-  transition:background .15s,border-color .15s,transform .18s,box-shadow .18s;
-  min-width:0; /* prevent grid overflow */
-  touch-action:manipulation;
-  -webkit-tap-highlight-color:transparent;
-}
-.l-kana-cell:hover  { background:var(--l-pink-light); border-color:var(--l-pink-mid); transform:scale(1.08); box-shadow:var(--shadow-sm); }
-.l-kana-cell:active { background:var(--l-pink-mid); border-color:var(--l-pink); transform:scale(.95); }
-.l-kana-cell .jp    { font-family:'Noto Sans JP',sans-serif; font-size:22px; display:block; margin-bottom:3px; line-height:1.2; }
-.l-kana-cell .rom   { font-size:10px; color:var(--l-text2); font-weight:500; letter-spacing:.02em; }
-@media(max-width:400px){
-  .l-kana-cell .jp  { font-size:18px; }
-  .l-kana-cell .rom { font-size:9px; }
-  .l-kana-cell      { padding:.55rem .2rem .4rem; border-radius:9px; }
-}
-
-/* Kana flip-card tooltip on mobile */
-.kana-toast {
-  position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(10px);
-  background:linear-gradient(135deg,#e91e8c,#c2185b);
-  color:#fff; padding:10px 24px; border-radius:30px;
-  font-family:'Noto Sans JP',sans-serif; font-size:15px; font-weight:600;
-  box-shadow:0 6px 20px rgba(194,24,91,.4);
-  opacity:0; pointer-events:none; z-index:999;
-  transition:opacity .22s, transform .22s;
-  white-space:nowrap;
-}
-.kana-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
-
-/* Kana section tab row — scrollable on small screens */
-#kana-tabs {
-  display:flex; gap:6px; overflow-x:auto; scrollbar-width:none;
-  padding-bottom:4px; margin-bottom:1.1rem; flex-wrap:nowrap;
-}
-#kana-tabs::-webkit-scrollbar { display:none; }
-#kana-tabs .l-tab-btn {
-  flex-shrink:0; font-size:12px; padding:7px 14px;
-  border-radius:20px; white-space:nowrap;
-}
-@media(max-width:480px){
-  #kana-tabs .l-tab-btn { font-size:11px; padding:6px 11px; }
-}
+.l-kana-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(58px,1fr)); gap:6px; margin-bottom:1.4rem; }
+.l-kana-cell { background:#fff; border:1px solid var(--l-border); border-radius:var(--l-radius-sm); padding:.65rem .4rem; text-align:center; cursor:pointer; transition:background .15s,border-color .15s,transform .2s; }
+.l-kana-cell:hover { background:var(--l-pink-light); border-color:var(--l-pink-mid); transform:scale(1.12); box-shadow:var(--shadow-sm); }
+.l-kana-cell .jp  { font-family:'Noto Sans JP',sans-serif; font-size:20px; display:block; margin-bottom:2px; }
+.l-kana-cell .rom { font-size:9.5px; color:var(--l-text2); }
 .l-kanji-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(90px,1fr)); gap:8px; margin-bottom:1.4rem; }
 .l-kanji-cell { background:#fff; border:1px solid var(--l-border); border-radius:var(--l-radius); padding:.8rem .5rem; text-align:center; cursor:pointer; transition:all .2s; }
 .l-kanji-cell:hover { background:var(--l-pink-light); border-color:var(--l-pink-mid); transform:scale(1.08); box-shadow:var(--shadow-sm); }
@@ -1133,7 +1081,7 @@ main { flex:1; padding:2rem; overflow-x:hidden; max-width:100%; }
     <a data-section="n1">N1</a>
   </nav>
   <div class="header-right">
-    <div class="streak-badge">&#128293; <span id="nz-streak-hero">7</span> day streak</div>
+    <div class="streak-badge">&#128293; <span>7</span> day streak</div>
     <div class="xp-badge">&#11088; <span>240</span> XP</div>
     <a id="header-login-btn" href="login.html" style="
       display:flex; align-items:center; gap:6px; padding:6px 14px;
@@ -1201,8 +1149,8 @@ main { flex:1; padding:2rem; overflow-x:hidden; max-width:100%; }
     <div id="sec-home" class="zen-section active">
       <div class="welcome-banner">
         <div class="welcome-text">
-          <h2>Konnichiwa, <span id="nz-greeting-name">Learner</span>! 🌸</h2>
-          <p>You're on a <strong id="nz-streak-hero">7</strong>-day streak. Keep going! &#127800;</p>
+          <h2 id="dash-greeting">Konnichiwa, Learner&#65281;</h2>
+          <p>You're on a <strong>7</strong>-day streak. Keep going! &#127800;</p>
         </div>
         <div class="daily-goal">
           <svg class="progress-ring" viewBox="0 0 60 60">
@@ -1211,25 +1159,25 @@ main { flex:1; padding:2rem; overflow-x:hidden; max-width:100%; }
               stroke-dasharray="157" stroke-dashoffset="80" stroke-linecap="round"
               transform="rotate(-90 30 30)" style="transition:stroke-dashoffset 1.2s ease"/>
           </svg>
-          <div class="goal-num" id="nz-xp-today">—</div>
-          <div class="goal-label">XP today / <span id="nz-xp-goal">50</span> goal</div>
+          <div class="goal-num">30</div>
+          <div class="goal-label">XP today / 50 goal</div>
         </div>
       </div>
 
       <div class="stats-grid">
-        <div class="stat-card"><div class="stat-icon">&#128218;</div><div class="stat-val" id="nz-lessons-count">—</div><div class="stat-label">Lessons Completed</div><div class="stat-change up" id="nz-lessons-week">+0 this week</div></div>
-        <div class="stat-card"><div class="stat-icon">&#128292;</div><div class="stat-val" id="nz-vocab-count">—</div><div class="stat-label">Vocabulary Mastered</div><div class="stat-change up" id="nz-vocab-week">+0 this week</div></div>
-        <div class="stat-card"><div class="stat-icon">&#28450;</div><div class="stat-val" id="nz-kanji-count">—</div><div class="stat-label">Kanji Learned</div><div class="stat-change up" id="nz-kanji-week">+0 this week</div></div>
-        <div class="stat-card"><div class="stat-icon">&#127919;</div><div class="stat-val" id="nz-accuracy-count">—</div><div class="stat-label">Quiz Accuracy</div><div class="stat-change up" id="nz-accuracy-week">&#8593; 0% this week</div></div>
+        <div class="stat-card"><div class="stat-icon">&#128218;</div><div class="stat-val">12</div><div class="stat-label">Lessons Completed</div><div class="stat-change up">+2 this week</div></div>
+        <div class="stat-card"><div class="stat-icon">&#128292;</div><div class="stat-val">84</div><div class="stat-label">Vocabulary Mastered</div><div class="stat-change up">+15 this week</div></div>
+        <div class="stat-card"><div class="stat-icon">&#28450;</div><div class="stat-val">40</div><div class="stat-label">Kanji Learned</div><div class="stat-change up">+5 this week</div></div>
+        <div class="stat-card"><div class="stat-icon">&#127919;</div><div class="stat-val">78%</div><div class="stat-label">Quiz Accuracy</div><div class="stat-change up">&#8593; 3% this week</div></div>
       </div>
 
       <div class="xp-card">
         <div class="xp-header">
-          <div><div style="font-size:.77rem;color:var(--ink-light);margin-bottom:.2rem">Current Level</div><div class="xp-level" id="nz-level">&#9889; Level 1</div></div>
-          <div style="text-align:right"><div style="font-size:.77rem;color:var(--ink-light)">Total XP</div><div style="font-size:1.2rem;font-weight:700;color:var(--gold)" id="nz-total-xp">0</div></div>
+          <div><div style="font-size:.77rem;color:var(--ink-light);margin-bottom:.2rem">Current Level</div><div class="xp-level">&#9889; Level 5</div></div>
+          <div style="text-align:right"><div style="font-size:.77rem;color:var(--ink-light)">Total XP</div><div style="font-size:1.2rem;font-weight:700;color:var(--gold)">240</div></div>
         </div>
-        <div class="xp-bar-wrap"><div class="xp-bar-fill" id="nz-level-bar" style="width:0%"></div></div>
-        <div class="xp-labels"><span id="nz-level-xp">0 XP</span><span>Next: <span id="nz-level-xp-req">200</span> XP</span></div>
+        <div class="xp-bar-wrap"><div class="xp-bar-fill" style="width:40%"></div></div>
+        <div class="xp-labels"><span>40 XP</span><span>Next: 500 XP</span></div>
       </div>
 
       <!-- STUDY TIMER — settings gear stays here only -->
@@ -1313,32 +1261,15 @@ main { flex:1; padding:2rem; overflow-x:hidden; max-width:100%; }
 
     <!-- KANA -->
     <div id="sec-learn-kana" class="zen-section learn-section">
-      <p class="l-section-title">🌸 Hiragana &amp; Katakana</p>
-      <p class="l-section-sub">Tap any character to see its romaji reading.</p>
-
-      <!-- Scrollable tabs -->
-      <div id="kana-tabs">
+      <p class="l-section-title">Hiragana &amp; Katakana</p>
+      <p class="l-section-sub">Click any character to see its romaji reading.</p>
+      <div class="l-tab-row" id="kana-tabs">
         <button class="l-tab-btn active" data-kana="h">Hiragana &#12402;&#12425;&#12364;&#12394;</button>
         <button class="l-tab-btn" data-kana="k">Katakana &#12459;&#12479;&#12459;&#12490;</button>
         <button class="l-tab-btn" data-kana="d">Dakuten &#12364;&#12374;&#12384;&#12400;</button>
         <button class="l-tab-btn" data-kana="c">Combinations &#12365;&#12419;</button>
       </div>
-
-      <!-- Character count badge -->
-      <div id="kana-count-badge" style="
-        display:inline-flex; align-items:center; gap:5px;
-        background:var(--l-pink-light); border:1px solid var(--l-pink-mid);
-        border-radius:20px; padding:3px 11px; font-size:11px;
-        font-weight:600; color:var(--l-pink-dark); margin-bottom:10px;
-      ">
-        <span>&#12354;</span>
-        <span id="kana-count-txt">46 characters</span>
-      </div>
-
       <div id="kana-grid-wrap"></div>
-
-      <!-- Mobile toast -->
-      <div class="kana-toast" id="kanaToast"></div>
     </div>
 
         <!-- KANJI — search + translate + fetch from data/kanji/ -->
@@ -1703,7 +1634,7 @@ main { flex:1; padding:2rem; overflow-x:hidden; max-width:100%; }
           <div class="jp-home-title">Choose Your Level</div>
           <div class="jp-home-sub">Select a JLPT level to start practicing</div>
           <div class="jp-lv-cards">
-            <div class="jp-lv-card" onclick="event.stopPropagation();jpSelectLevel('N5')">
+            <div class="jp-lv-card" onclick="jpSelectLevel('N5')">
               <div class="jp-lv-badge jpb-n5">N5</div>
               <div class="jp-lv-info">
                 <div class="jp-lv-name">JLPT N5 — Beginner</div>
@@ -1711,7 +1642,7 @@ main { flex:1; padding:2rem; overflow-x:hidden; max-width:100%; }
                 <div class="jp-lv-prog"><div class="jp-lp-bar"><div class="jp-lp-fill" style="width:35%"></div></div><div class="jp-lp-txt">35% completed</div></div>
               </div><div class="jp-lv-arrow">›</div>
             </div>
-            <div class="jp-lv-card" onclick="event.stopPropagation();jpSelectLevel('N4')">
+            <div class="jp-lv-card" onclick="jpSelectLevel('N4')">
               <div class="jp-lv-badge jpb-n4">N4</div>
               <div class="jp-lv-info">
                 <div class="jp-lv-name">JLPT N4 — Elementary</div>
@@ -1719,7 +1650,7 @@ main { flex:1; padding:2rem; overflow-x:hidden; max-width:100%; }
                 <div class="jp-lv-prog"><div class="jp-lp-bar"><div class="jp-lp-fill" style="width:20%"></div></div><div class="jp-lp-txt">20% completed</div></div>
               </div><div class="jp-lv-arrow">›</div>
             </div>
-            <div class="jp-lv-card" onclick="event.stopPropagation();jpSelectLevel('N3')">
+            <div class="jp-lv-card" onclick="jpSelectLevel('N3')">
               <div class="jp-lv-badge jpb-n3">N3</div>
               <div class="jp-lv-info">
                 <div class="jp-lv-name">JLPT N3 — Intermediate</div>
@@ -1727,7 +1658,7 @@ main { flex:1; padding:2rem; overflow-x:hidden; max-width:100%; }
                 <div class="jp-lv-prog"><div class="jp-lp-bar"><div class="jp-lp-fill" style="width:10%"></div></div><div class="jp-lp-txt">10% completed</div></div>
               </div><div class="jp-lv-arrow">›</div>
             </div>
-            <div class="jp-lv-card" onclick="event.stopPropagation();jpSelectLevel('N2')">
+            <div class="jp-lv-card" onclick="jpSelectLevel('N2')">
               <div class="jp-lv-badge jpb-n2">N2</div>
               <div class="jp-lv-info">
                 <div class="jp-lv-name">JLPT N2 — Upper Intermediate</div>
@@ -1735,7 +1666,7 @@ main { flex:1; padding:2rem; overflow-x:hidden; max-width:100%; }
                 <div class="jp-lv-prog"><div class="jp-lp-bar"><div class="jp-lp-fill" style="width:5%"></div></div><div class="jp-lp-txt">5% completed</div></div>
               </div><div class="jp-lv-arrow">›</div>
             </div>
-            <div class="jp-lv-card" onclick="event.stopPropagation();jpSelectLevel('N1')">
+            <div class="jp-lv-card" onclick="jpSelectLevel('N1')">
               <div class="jp-lv-badge jpb-n1">N1</div>
               <div class="jp-lv-info">
                 <div class="jp-lv-name">JLPT N1 — Advanced</div>
@@ -1750,11 +1681,11 @@ main { flex:1; padding:2rem; overflow-x:hidden; max-width:100%; }
         <div id="jpPracticeScreen" style="display:none">
           <!-- Level tabs -->
           <div class="jp-lv-tabs" id="jpLvTabs">
-            <button class="jp-lv-tab" onclick="event.stopPropagation();jpSelectLevel('N5')">N5</button>
-            <button class="jp-lv-tab" onclick="event.stopPropagation();jpSelectLevel('N4')">N4</button>
-            <button class="jp-lv-tab" onclick="event.stopPropagation();jpSelectLevel('N3')">N3</button>
-            <button class="jp-lv-tab" onclick="event.stopPropagation();jpSelectLevel('N2')">N2</button>
-            <button class="jp-lv-tab" onclick="event.stopPropagation();jpSelectLevel('N1')">N1</button>
+            <button class="jp-lv-tab" onclick="jpSelectLevel('N5')">N5</button>
+            <button class="jp-lv-tab" onclick="jpSelectLevel('N4')">N4</button>
+            <button class="jp-lv-tab" onclick="jpSelectLevel('N3')">N3</button>
+            <button class="jp-lv-tab" onclick="jpSelectLevel('N2')">N2</button>
+            <button class="jp-lv-tab" onclick="jpSelectLevel('N1')">N1</button>
           </div>
           <!-- Category tabs -->
           <div class="jp-cat-tabs">
@@ -2950,7 +2881,8 @@ main { flex:1; padding:2rem; overflow-x:hidden; max-width:100%; }
 <!-- DATA (kanji N5-N1 2244 + vocab + lessons + kana) -->
 <div id="translate-status"></div>
 
-<!-- DATA — loaded from external files -->
+<!-- DATA -->
+<!-- DATA: External files -->
 <script src="data/kanji.js"></script>
 <script src="data/vocab.js"></script>
 
@@ -3718,7 +3650,7 @@ jlptLevels.forEach(function(l){
   var card=document.createElement('div');
   card.className='level-card '+l.id;
   card.dataset.section=l.id;
-  card.innerHTML='<div class="level-badge" id="nz-level">'+l.name+'</div><h4>'+l.name+' \u2013 '+l.desc.split('\u2013')[0].trim()+'</h4><p>'+l.desc+'</p><div class="level-progress"><div class="level-progress-fill" style="width:'+l.pct+'%"></div></div><div class="level-pct">'+l.pct+'% complete</div>';
+  card.innerHTML='<div class="level-badge">'+l.name+'</div><h4>'+l.name+' \u2013 '+l.desc.split('\u2013')[0].trim()+'</h4><p>'+l.desc+'</p><div class="level-progress"><div class="level-progress-fill" style="width:'+l.pct+'%"></div></div><div class="level-pct">'+l.pct+'% complete</div>';
   levelsGrid.appendChild(card);
 });
 function renderLevelSection(id){
@@ -3753,55 +3685,23 @@ function switchLesson(lv,btn){
 switchLesson('n5',lessonTabsEl.querySelector('.l-tab-btn'));
 
 // ══ KANA ═════════════════════════════════════════════════════════════
-var kanaMap = { h:hiragana, k:katakana, d:dakuten, c:combinations };
-var kanaCountLabels = { h:'46 characters', k:'46 characters', d:'25 characters', c:'33 combinations' };
-var kanaToastTimer = null;
-
-function buildKanaGrid(data, key) {
-  var wrap = document.getElementById('kana-grid-wrap');
-  if (!wrap) return;
-  wrap.innerHTML = '<div class="l-kana-grid">' +
-    data.map(function(k) {
-      return '<div class="l-kana-cell" data-jp="'+k.jp+'" data-rom="'+k.r+'">'
-           + '<span class="jp">' + k.jp + '</span>'
-           + '<span class="rom">' + k.r + '</span>'
-           + '</div>';
-    }).join('') +
+var kanaMap={h:hiragana,k:katakana,d:dakuten,c:combinations};
+function buildKanaGrid(data){
+  document.getElementById('kana-grid-wrap').innerHTML='<div class="l-kana-grid">'+
+    data.map(function(k){return '<div class="l-kana-cell"><span class="jp">'+k.jp+'</span><span class="rom">'+k.r+'</span></div>';}).join('')+
   '</div>';
-  // Update count badge
-  var cb = document.getElementById('kana-count-txt');
-  if (cb && key && kanaCountLabels[key]) cb.textContent = kanaCountLabels[key];
 }
-
-buildKanaGrid(hiragana, 'h');
-
-document.getElementById('kana-tabs').addEventListener('click', function(e) {
-  var btn = e.target.closest('.l-tab-btn');
-  if (!btn) return;
+buildKanaGrid(hiragana);
+document.getElementById('kana-tabs').addEventListener('click',function(e){
+  var btn=e.target.closest('.l-tab-btn');
+  if(!btn) return;
   document.querySelectorAll('#kana-tabs .l-tab-btn').forEach(function(b){ b.classList.remove('active'); });
   btn.classList.add('active');
-  buildKanaGrid(kanaMap[btn.dataset.kana], btn.dataset.kana);
+  buildKanaGrid(kanaMap[btn.dataset.kana]);
 });
-
-// Tap / click: show mobile-friendly toast
-document.getElementById('kana-grid-wrap').addEventListener('click', function(e) {
-  var cell = e.target.closest('.l-kana-cell');
-  if (!cell) return;
-  var jp  = cell.dataset.jp;
-  var rom = cell.dataset.rom;
-  // Highlight tapped cell briefly
-  cell.style.background = 'var(--l-pink-mid)';
-  setTimeout(function(){ cell.style.background = ''; }, 400);
-  // Show kana toast (mobile-friendly)
-  var toast = document.getElementById('kanaToast');
-  if (toast) {
-    toast.textContent = jp + '  =  ' + rom.toUpperCase();
-    toast.classList.add('show');
-    clearTimeout(kanaToastTimer);
-    kanaToastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2000);
-  }
-  // Also show top toast if function exists
-  if (typeof showToast === 'function') showToast(jp + ' = ' + rom);
+document.getElementById('kana-grid-wrap').addEventListener('click',function(e){
+  var cell=e.target.closest('.l-kana-cell');
+  if(cell) showToast(cell.querySelector('.jp').textContent+' = '+cell.querySelector('.rom').textContent);
 });
 
 // ══ VOCABULARY ═══════════════════════════════════════════════════════
@@ -4451,75 +4351,40 @@ document.addEventListener('click', function () {
 
 // Sign-out: clear cache then redirect to login
 function nzSignOut() {
-  if (window._nzSignOut) { window._nzSignOut(); return; }
   try { localStorage.removeItem('nz_user'); sessionStorage.removeItem('nz_user'); } catch(e) {}
-  window.location.replace('login.html');
-}
-
-// ── Populate all dashboard UI from Firestore data ───────────
-function nzPopulateDashboard(user, data) {
-  var greet = document.getElementById('nz-greeting-name');
-  if (greet) greet.textContent = (user.displayName || user.email || 'Learner').split(' ')[0];
-
-  var streakEl  = document.querySelector('.streak-badge span');
-  var xpBadgeEl = document.querySelector('.xp-badge span');
-  var heroStreak = document.getElementById('nz-streak-hero');
-  if (streakEl)  streakEl.textContent  = (data.streak || 1) + '';
-  if (xpBadgeEl) xpBadgeEl.textContent = (data.xp     || 0) + '';
-  if (heroStreak) heroStreak.textContent = (data.streak || 1) + '';
-
-  var xpToday  = data.xp     || 0;
-  var xpGoal   = data.xpGoal || 50;
-  var xpNumEl  = document.getElementById('nz-xp-today');
-  var xpGoalEl = document.getElementById('nz-xp-goal');
-  if (xpNumEl)  xpNumEl.textContent  = xpToday;
-  if (xpGoalEl) xpGoalEl.textContent = xpGoal;
-
-  var pct    = Math.min(100, Math.round((xpToday / xpGoal) * 100));
-  var circle = document.querySelector('.progress-ring circle[stroke="var(--sakura)"]');
-  if (circle) {
-    var r = parseFloat(circle.getAttribute('r') || 25);
-    var circ = 2 * Math.PI * r;
-    circle.style.strokeDasharray  = circ;
-    circle.style.strokeDashoffset = circ * (1 - pct / 100);
+  if (window._nzAuth && typeof window._nzAuth.signOut === 'function') {
+    window._nzAuth.signOut()
+      .then(function () { window.location.href = 'index.html'; })
+      .catch(function () { window.location.href = 'index.html'; });
+  } else {
+    window.location.href = 'index.html';
   }
-
-  var map = {
-    'nz-lessons-count':  data.lessonsCompleted || 0,
-    'nz-vocab-count':    data.vocabMastered    || 0,
-    'nz-kanji-count':    data.kanjiCount       || 0,
-    'nz-accuracy-count': (data.quizAccuracy    || 0) + '%',
-    'nz-lessons-week':   '+' + (data.weeklyLessons || 0) + ' this week',
-    'nz-vocab-week':     '+' + (data.weeklyVocab   || 0) + ' this week',
-    'nz-kanji-week':     '+' + (data.weeklyKanji   || 0) + ' this week',
-    'nz-accuracy-week':  '\u2191 ' + (data.weeklyAccuracyDelta || 0) + '% this week'
-  };
-  Object.keys(map).forEach(function(id) {
-    var el = document.getElementById(id); if (el) el.textContent = map[id];
-  });
-
-  var lvl    = data.level    || 1;
-  var lvlXP  = data.levelXP  || 0;
-  var lvlReq = data.levelXPRequired || 200;
-  var lvlEl    = document.getElementById('nz-level');
-  var lvlBar   = document.getElementById('nz-level-bar');
-  var lvlXPEl  = document.getElementById('nz-level-xp');
-  var lvlReqEl = document.getElementById('nz-level-xp-req');
-  if (lvlEl)    lvlEl.textContent  = 'Level ' + lvl;
-  if (lvlBar)   lvlBar.style.width = Math.min(100, Math.round((lvlXP/lvlReq)*100)) + '%';
-  if (lvlXPEl)  lvlXPEl.textContent  = lvlXP;
-  if (lvlReqEl) lvlReqEl.textContent = lvlReq;
-
-  nzRenderProfile(user.displayName||user.email||'User', user.photoURL||'', user.email||'');
 }
-window.nzPopulateDashboard = nzPopulateDashboard;
 
-document.addEventListener('nz:userReady', function(e) {
-  nzPopulateDashboard(e.detail.user, e.detail.data);
-});
-document.addEventListener('nz:xpUpdated', function(e) {
-  if (window._nzUser) nzPopulateDashboard(window._nzUser, e.detail);
-});
+// Boot: try to load cached user immediately (before Firebase async fires)
+(function () {
+  function loadCachedUser() {
+    try {
+      var s = localStorage.getItem('nz_user') || sessionStorage.getItem('nz_user');
+      if (!s) {
+        var older = sessionStorage.getItem('user') || localStorage.getItem('user');
+        if (older) s = older;
+      }
+      if (s) {
+        var u = JSON.parse(s);
+        nzRenderProfile(
+          u.displayName || u.name || u.email || 'User',
+          u.photoURL || '',
+          u.email || ''
+        );
+      }
+    } catch (e) { /* silent */ }
+  }
+  loadCachedUser();
+  setTimeout(loadCachedUser, 800);
+  setTimeout(loadCachedUser, 2500);
+  window.addEventListener('storage', loadCachedUser);
+})();
 
 
 // ══ KANJI SEARCH & TRANSLATE ════════════════════════════════════════
@@ -5225,19 +5090,15 @@ function jpSelectLevel(lv) {
   jpLevel = lv;
   var home  = document.getElementById('jpHomeScreen');
   var pract = document.getElementById('jpPracticeScreen');
-  if (home)  { home.style.display  = 'none'; }
-  if (pract) { pract.style.display = 'block'; }
-  // Update level tabs
+  if(home)  home.style.display  = 'none';
+  if(pract) pract.style.display = 'block';
   document.querySelectorAll('.jp-lv-tab').forEach(function(t){
     t.classList.toggle('active', t.textContent.trim() === lv);
   });
-  // Reset to vocab category
+  // Reset category to vocab on new level
   jpCat = 'vocab';
-  document.querySelectorAll('.jp-cat-tab').forEach(function(t, i){
-    t.classList.toggle('active', i === 0);
-  });
-  // Small timeout so DOM paint completes before quiz renders
-  setTimeout(function(){ jpStartQuiz(); }, 30);
+  document.querySelectorAll('.jp-cat-tab').forEach(function(t,i){ t.classList.toggle('active', i===0); });
+  jpStartQuiz();
 }
 function jpSelectCat(cat, el) {
   jpCat = cat;
@@ -5275,72 +5136,45 @@ function jpStartQuiz() {
   jpShowQ();
 }
 function jpShowQ() {
-  if (!jpQs || jpIdx >= jpQs.length) { jpShowScore(); return; }
+  if (jpIdx >= jpQs.length) { jpShowScore(); return; }
   jpAnswered = false;
-  var q   = jpQs[jpIdx];
-  var tot = jpQs.length;
+  var q = jpQs[jpIdx], tot = jpQs.length;
   var pct = (jpIdx / tot) * 100;
-
-  // Safe getter helper
-  function $id(id) { return document.getElementById(id); }
-
-  var pf = $id('jpProgressFill'); if(pf) pf.style.width = pct + '%';
-  var pl = $id('jpProgressLbl');  if(pl) pl.textContent = 'Question ' + (jpIdx+1) + ' / ' + tot;
-  var qb = $id('jpQBadge');       if(qb) qb.textContent = q.type || '';
-  var qc = $id('jpCounter');      if(qc) qc.textContent = (jpIdx+1) + '/' + tot;
-
-  var ctx = $id('jpQContext');
-  if (ctx) {
-    if (q.reading)       { ctx.innerHTML = '<div class="jp-passage">' + q.reading + '</div>'; ctx.style.display = 'block'; }
-    else if (q.context)  { ctx.innerHTML = '<div class="jp-context">' + q.context + '</div>'; ctx.style.display = 'block'; }
-    else                 { ctx.innerHTML = ''; ctx.style.display = 'none'; }
-  }
-
-  var qt = $id('jpQText');
-  if (qt) {
-    if (q.text) { qt.innerHTML = q.text; qt.style.display = 'block'; }
-    else        { qt.style.display = 'none'; }
-  }
-
-  var od = $id('jpOptsDiv');
-  if (od) {
-    od.innerHTML = '';
-    od.style.display = 'flex';
-    (q.options || []).forEach(function(opt, i) {
-      var btn = document.createElement('button');
-      btn.className = 'jp-opt';
-      btn.innerHTML = '<span class="jp-opt-num">' + (i+1) + '</span><span>' + opt + '</span>';
-      btn.onclick = (function(ii){ return function(){ jpAnswer(ii); }; })(i);
-      od.appendChild(btn);
-    });
-  }
-
-  var fb = $id('jpFeedback');
-  if (fb) { fb.className = 'jp-feedback'; fb.style.display = 'none'; }
-  var nb = $id('jpBtnNext');
-  if (nb) nb.disabled = true;
+  document.getElementById('jpProgressFill').style.width = pct + '%';
+  document.getElementById('jpProgressLbl').textContent = 'Question ' + (jpIdx+1) + ' / ' + tot;
+  document.getElementById('jpQBadge').textContent = q.type;
+  document.getElementById('jpCounter').textContent = (jpIdx+1) + '/' + tot;
+  var ctx = document.getElementById('jpQContext');
+  if (q.reading) { ctx.innerHTML = '<div class="jp-passage">' + q.reading + '</div>'; ctx.style.display = 'block'; }
+  else if (q.context) { ctx.innerHTML = '<div class="jp-context">' + q.context + '</div>'; ctx.style.display = 'block'; }
+  else { ctx.innerHTML = ''; ctx.style.display = 'none'; }
+  var qt = document.getElementById('jpQText');
+  if (q.text) { qt.innerHTML = q.text; qt.style.display = 'block'; } else { qt.style.display = 'none'; }
+  var od = document.getElementById('jpOptsDiv'); od.innerHTML = '';
+  q.options.forEach(function(opt, i) {
+    var btn = document.createElement('button');
+    btn.className = 'jp-opt';
+    btn.innerHTML = '<span class="jp-opt-num">' + (i+1) + '</span><span>' + opt + '</span>';
+    btn.onclick = function(){ jpAnswer(i); };
+    od.appendChild(btn);
+  });
+  var fb = document.getElementById('jpFeedback'); fb.className = 'jp-feedback';
+  var nb = document.getElementById('jpBtnNext'); nb.disabled = true;
 }
 function jpAnswer(idx) {
   if (jpAnswered) return; jpAnswered = true;
-  var q   = jpQs[jpIdx];
-  var ps  = document.getElementById('jpPracticeScreen');
-  // Scope querySelectorAll to practice screen only
-  var opts = ps ? ps.querySelectorAll('.jp-opt') : document.querySelectorAll('.jp-opt');
-  opts.forEach(function(btn, i) {
+  var q = jpQs[jpIdx];
+  document.querySelectorAll('.jp-opt').forEach(function(btn, i) {
     btn.classList.add('jp-disabled');
     if (i === q.answer) btn.classList.add('jp-correct');
     else if (i === idx && idx !== q.answer) btn.classList.add('jp-wrong');
   });
-  var ok = (idx === q.answer);
-  if (ok) jpScore++;
-  var fb    = document.getElementById('jpFeedback');
-  var fbT   = document.getElementById('jpFbTitle');
-  var fbExp = document.getElementById('jpFbExp');
-  var nbtn  = document.getElementById('jpBtnNext');
-  if (fb)   fb.className = 'jp-feedback show ' + (ok ? 'ok' : 'bad');
-  if (fbT)  fbT.textContent  = ok ? '✅ Correct! せいかい！' : '❌ Incorrect. Answer: ' + q.options[q.answer];
-  if (fbExp) fbExp.textContent = q.explanation || '';
-  if (nbtn) nbtn.disabled = false;
+  var ok = idx === q.answer; if(ok) jpScore++;
+  var fb = document.getElementById('jpFeedback');
+  fb.className = 'jp-feedback show ' + (ok ? 'ok' : 'bad');
+  document.getElementById('jpFbTitle').textContent = ok ? '✅ Correct! せいかい！' : '❌ Incorrect. Answer: ' + q.options[q.answer];
+  document.getElementById('jpFbExp').textContent = q.explanation;
+  document.getElementById('jpBtnNext').disabled = false;
 }
 function jpNext()  { jpIdx++; jpShowQ(); }
 function jpSkip()  { jpIdx++; jpShowQ(); }
@@ -5385,7 +5219,185 @@ function jpShowScore() {
 })();
 </script>
 
-<!-- Auth handled by auth-guard.js -->
+<script type="module">
+// ============================================================
+// NihongoZen — Firebase Auth + Firestore Integration
+// Handles: Auth state, user profile, dashboard stats
+// ============================================================
+import { initializeApp }
+  from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getAuth, onAuthStateChanged, signOut }
+  from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+import { getFirestore, doc, getDoc, setDoc, updateDoc, serverTimestamp }
+  from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+const cfg = {
+  apiKey:            "AIzaSyCP2Uwo1lx996q0l3nkC7RhAesVuIHEXiA",
+  authDomain:        "nihongo-zen-cd97d.firebaseapp.com",
+  projectId:         "nihongo-zen-cd97d",
+  storageBucket:     "nihongo-zen-cd97d.firebasestorage.app",
+  messagingSenderId: "513320956483",
+  appId:             "1:513320956483:web:a1069825e0df3587f65af6"
+};
+
+const app  = initializeApp(cfg);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+// Expose globally for non-module scripts
+window._nzAuth    = auth;
+window._nzDb      = db;
+window._nzSignOut = () => signOut(auth).then(() => window.location.replace('login.html'));
+
+// ── Fix nzSignOut to use Firebase properly ──────────────────
+window.nzSignOut = () => {
+  try { localStorage.removeItem('nz_user'); sessionStorage.removeItem('nz_user'); } catch(e) {}
+  signOut(auth).then(() => window.location.replace('login.html')).catch(() => window.location.replace('login.html'));
+};
+
+// ── Update greeting to "Konnichiwa, [Name]!" ────────────────
+function updateGreeting(name) {
+  const el = document.getElementById('dash-greeting');
+  if (el) el.innerHTML = 'Konnichiwa, ' + name + '&#65281;';
+}
+
+// ── Update dashboard stat cards from Firestore data ─────────
+function updateDashboardStats(data) {
+  // Streak
+  const streakEls = document.querySelectorAll('.streak-badge span, .streak-badge strong');
+  streakEls.forEach(el => { el.textContent = data.streak || 1; });
+  const streakP = document.querySelector('.welcome-text p strong');
+  if (streakP) streakP.textContent = data.streak || 1;
+
+  // XP / Daily Goal
+  const xpNow  = data.xp    || 0;
+  const xpGoal = data.xpGoal || 50;
+  const xpPct  = Math.min(100, Math.round((xpNow / xpGoal) * 100));
+  _setEl('dash-xp-now',  xpNow + ' XP');
+  _setEl('dash-xp-goal', xpGoal + ' goal');
+  _setAttr('dash-xp-bar', 'style', 'width:' + xpPct + '%');
+  _setEl('dash-xp-pct', xpPct + '%');
+
+  // Analytics cards
+  _setEl('dash-lessons',      data.lessonsCompleted || 0);
+  _setEl('dash-vocab',        data.vocabMastered    || 0);
+  _setEl('dash-kanji',        data.kanjiCount        || 0);
+  _setEl('dash-accuracy',    (data.quizAccuracy      || 0) + '%');
+
+  // Weekly badges
+  _setEl('dash-lessons-week',  '+' + (data.weeklyLessons || 0) + ' this week');
+  _setEl('dash-vocab-week',    '+' + (data.weeklyVocab   || 0) + ' this week');
+  _setEl('dash-kanji-week',    '+' + (data.weeklyKanji   || 0) + ' this week');
+  _setEl('dash-accuracy-week', '↑ ' + (data.weeklyAccuracyDelta || 0) + '% this week');
+
+  // Level & XP bar
+  _setEl('dash-level',    'Level ' + (data.level || 1));
+  _setEl('dash-level-xp', (data.levelXP || 0) + ' / ' + (data.levelXPRequired || 200) + ' XP');
+  const lvlPct = Math.min(100, Math.round(((data.levelXP || 0) / (data.levelXPRequired || 200)) * 100));
+  _setAttr('dash-level-bar', 'style', 'width:' + lvlPct + '%');
+}
+
+function _setEl(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+function _setAttr(id, attr, val) {
+  const el = document.getElementById(id);
+  if (el) el.setAttribute(attr, val) || (el.style = val.replace('style:',''));
+  if (el && attr === 'style') el.style.cssText = val.replace('style:','').replace('style=','');
+  if (el && attr === 'style') { const m = val.match(/width:([\d.]+%)/); if(m) el.style.width = m[1]; }
+}
+
+// ── Expose XP adder for other scripts ───────────────────────
+window._nzAddXP = async (amount) => {
+  const user = auth.currentUser;
+  if (!user) return;
+  const ref  = doc(db, 'users', user.uid);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) return;
+  const d    = snap.data();
+  const newXP    = (d.xp    || 0) + amount;
+  const newLvlXP = (d.levelXP || 0) + amount;
+  const lvlReq   = d.levelXPRequired || 200;
+  const lvlUp    = newLvlXP >= lvlReq;
+  await updateDoc(ref, {
+    xp:      newXP,
+    levelXP: lvlUp ? newLvlXP - lvlReq : newLvlXP,
+    level:   lvlUp ? (d.level || 1) + 1 : (d.level || 1)
+  });
+  const fresh = await getDoc(ref);
+  updateDashboardStats(fresh.data());
+  document.dispatchEvent(new CustomEvent('nz:xpUpdated', { detail: fresh.data() }));
+};
+
+// ── Main auth state listener ─────────────────────────────────
+onAuthStateChanged(auth, async (firebaseUser) => {
+  if (!firebaseUser) {
+    // Not logged in → redirect
+    window.location.replace('login.html');
+    return;
+  }
+
+  // ── Render profile badge immediately ──────────────────────
+  const uData = {
+    displayName: firebaseUser.displayName || firebaseUser.email || 'User',
+    email:       firebaseUser.email       || '',
+    photoURL:    firebaseUser.photoURL    || ''
+  };
+  try { localStorage.setItem('nz_user', JSON.stringify(uData)); } catch(e) {}
+  if (typeof window.nzRenderProfile === 'function') {
+    window.nzRenderProfile(uData.displayName, uData.photoURL, uData.email);
+  }
+
+  // ── Update greeting ───────────────────────────────────────
+  const shortName = (uData.displayName).split(' ')[0].split('@')[0];
+  updateGreeting(shortName);
+
+  // ── Load/create Firestore user doc ────────────────────────
+  const userRef  = doc(db, 'users', firebaseUser.uid);
+  let   userSnap = await getDoc(userRef);
+
+  if (!userSnap.exists()) {
+    await setDoc(userRef, {
+      displayName:         uData.displayName,
+      email:               uData.email,
+      photoURL:            uData.photoURL,
+      xp:                  0,
+      xpGoal:              50,
+      streak:              1,
+      kanjiCount:          0,
+      lessonsCompleted:    0,
+      vocabMastered:       0,
+      quizAccuracy:        0,
+      level:               1,
+      levelXP:             0,
+      levelXPRequired:     200,
+      weeklyKanji:         0,
+      weeklyLessons:       0,
+      weeklyVocab:         0,
+      weeklyAccuracyDelta: 0,
+      lastLogin:           serverTimestamp(),
+      createdAt:           serverTimestamp()
+    });
+    userSnap = await getDoc(userRef);
+  } else {
+    await updateDoc(userRef, { lastLogin: serverTimestamp() });
+    userSnap = await getDoc(userRef);
+  }
+
+  const data = userSnap.data();
+  window._nzUser     = firebaseUser;
+  window._nzUserData = data;
+
+  // ── Update all dashboard stats ────────────────────────────
+  updateDashboardStats(data);
+
+  // ── Fire event for other scripts ─────────────────────────
+  document.dispatchEvent(new CustomEvent('nz:userReady', {
+    detail: { user: firebaseUser, data }
+  }));
+});
+</script>
 
 </body>
 </html>
