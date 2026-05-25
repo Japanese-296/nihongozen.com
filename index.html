@@ -8984,14 +8984,90 @@ document.addEventListener('click', function () {
 // Sign-out: clear cache then redirect to login
 function nzSignOut() {
   try { localStorage.removeItem('nz_user'); sessionStorage.removeItem('nz_user'); } catch(e) {}
-  if (window._nzAuth && typeof window._nzAuth.signOut === 'function') {
+  if (window._nzSignOut) {
+    window._nzSignOut();
+  } else if (window._nzAuth && typeof window._nzAuth.signOut === 'function') {
     window._nzAuth.signOut()
-      .then(function () { window.location.href = 'index.html'; })
-      .catch(function () { window.location.href = 'index.html'; });
+      .then(function () { window.location.replace('login.html'); })
+      .catch(function () { window.location.replace('login.html'); });
   } else {
-    window.location.href = 'index.html';
+    window.location.replace('login.html');
   }
 }
+
+// ── nz:userReady — update dashboard with real Firestore data ─────────
+document.addEventListener('nz:userReady', function(e) {
+  var user = e.detail.user;
+  var data = e.detail.data;
+  if (!user || !data) return;
+
+  // Save to localStorage for instant next-load render
+  try {
+    localStorage.setItem('nz_user', JSON.stringify({
+      displayName: user.displayName || data.displayName || 'Learner',
+      email:       user.email       || data.email       || '',
+      photoURL:    user.photoURL    || data.photoURL     || ''
+    }));
+  } catch(e) {}
+
+  // Update profile badge
+  var name = user.displayName || data.displayName || 'Learner';
+  if (typeof nzRenderProfile === 'function') {
+    nzRenderProfile(name, user.photoURL || '', user.email || '');
+  }
+
+  // Update greeting
+  var greet = document.getElementById('dash-greeting');
+  if (greet) greet.innerHTML = 'Konnichiwa, ' + name.split(' ')[0] + '&#65281;';
+
+  // ── Stats cards ──────────────────────────────────────────────
+  function setEl(id, val) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = val;
+  }
+  function setWidth(id, pct) {
+    var el = document.getElementById(id);
+    if (el) el.style.width = Math.min(100, pct) + '%';
+  }
+
+  // XP / Daily Goal
+  var xpNow  = data.xp     || 0;
+  var xpGoal = data.xpGoal || 50;
+  var xpPct  = Math.round((xpNow / xpGoal) * 100);
+  setEl('dash-xp-now',  xpNow  + ' XP');
+  setEl('dash-xp-goal', xpGoal + ' goal');
+  setEl('dash-xp-pct',  xpPct  + '%');
+  setWidth('dash-xp-bar', xpPct);
+
+  // Analytics cards
+  setEl('dash-lessons',       data.lessonsCompleted || 0);
+  setEl('dash-vocab',         data.vocabMastered    || 0);
+  setEl('dash-kanji',         data.kanjiCount       || 0);
+  setEl('dash-accuracy',     (data.quizAccuracy     || 0) + '%');
+
+  // Weekly badges
+  setEl('dash-lessons-week',  '+' + (data.weeklyLessons       || 0) + ' this week');
+  setEl('dash-vocab-week',    '+' + (data.weeklyVocab         || 0) + ' this week');
+  setEl('dash-kanji-week',    '+' + (data.weeklyKanji         || 0) + ' this week');
+  setEl('dash-accuracy-week', '↑ ' + (data.weeklyAccuracyDelta || 0) + '% this week');
+
+  // Streak
+  setEl('dash-streak', data.streak || 1);
+  var streakEls = document.querySelectorAll('.streak-count');
+  streakEls.forEach(function(el) { el.textContent = data.streak || 1; });
+
+  // Level + XP bar
+  var lvl    = data.level            || 1;
+  var lvlXP  = data.levelXP         || 0;
+  var lvlReq = data.levelXPRequired  || 200;
+  var lvlPct = Math.round((lvlXP / lvlReq) * 100);
+  setEl('dash-level',    'Level ' + lvl);
+  setEl('dash-level-xp', lvlXP + ' / ' + lvlReq + ' XP');
+  setWidth('dash-level-bar', lvlPct);
+
+  // XP pill in AI chat
+  setEl('aiXpPill', '⭐ ' + xpNow + ' XP');
+});
 
 // Boot: try to load cached user immediately (before Firebase async fires)
 (function () {
@@ -9017,6 +9093,7 @@ function nzSignOut() {
   setTimeout(loadCachedUser, 2500);
   window.addEventListener('storage', loadCachedUser);
 })();
+
 
 
 // ══ KANJI SEARCH & TRANSLATE ════════════════════════════════════════
@@ -9851,185 +9928,7 @@ function jpShowScore() {
 })();
 </script>
 
-<script type="module">
-// ============================================================
-// NihongoZen — Firebase Auth + Firestore Integration
-// Handles: Auth state, user profile, dashboard stats
-// ============================================================
-import { initializeApp }
-  from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import { getAuth, onAuthStateChanged, signOut }
-  from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-import { getFirestore, doc, getDoc, setDoc, updateDoc, serverTimestamp }
-  from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
-
-const cfg = {
-  apiKey:            "AIzaSyCP2Uwo1lx996q0l3nkC7RhAesVuIHEXiA",
-  authDomain:        "nihongo-zen-cd97d.firebaseapp.com",
-  projectId:         "nihongo-zen-cd97d",
-  storageBucket:     "nihongo-zen-cd97d.firebasestorage.app",
-  messagingSenderId: "513320956483",
-  appId:             "1:513320956483:web:a1069825e0df3587f65af6"
-};
-
-const app  = initializeApp(cfg);
-const auth = getAuth(app);
-const db   = getFirestore(app);
-
-// Expose globally for non-module scripts
-window._nzAuth    = auth;
-window._nzDb      = db;
-window._nzSignOut = () => signOut(auth).then(() => window.location.replace('login.html'));
-
-// ── Fix nzSignOut to use Firebase properly ──────────────────
-window.nzSignOut = () => {
-  try { localStorage.removeItem('nz_user'); sessionStorage.removeItem('nz_user'); } catch(e) {}
-  signOut(auth).then(() => window.location.replace('login.html')).catch(() => window.location.replace('login.html'));
-};
-
-// ── Update greeting to "Konnichiwa, [Name]!" ────────────────
-function updateGreeting(name) {
-  const el = document.getElementById('dash-greeting');
-  if (el) el.innerHTML = 'Konnichiwa, ' + name + '&#65281;';
-}
-
-// ── Update dashboard stat cards from Firestore data ─────────
-function updateDashboardStats(data) {
-  // Streak
-  const streakEls = document.querySelectorAll('.streak-badge span, .streak-badge strong');
-  streakEls.forEach(el => { el.textContent = data.streak || 1; });
-  const streakP = document.querySelector('.welcome-text p strong');
-  if (streakP) streakP.textContent = data.streak || 1;
-
-  // XP / Daily Goal
-  const xpNow  = data.xp    || 0;
-  const xpGoal = data.xpGoal || 50;
-  const xpPct  = Math.min(100, Math.round((xpNow / xpGoal) * 100));
-  _setEl('dash-xp-now',  xpNow + ' XP');
-  _setEl('dash-xp-goal', xpGoal + ' goal');
-  _setAttr('dash-xp-bar', 'style', 'width:' + xpPct + '%');
-  _setEl('dash-xp-pct', xpPct + '%');
-
-  // Analytics cards
-  _setEl('dash-lessons',      data.lessonsCompleted || 0);
-  _setEl('dash-vocab',        data.vocabMastered    || 0);
-  _setEl('dash-kanji',        data.kanjiCount        || 0);
-  _setEl('dash-accuracy',    (data.quizAccuracy      || 0) + '%');
-
-  // Weekly badges
-  _setEl('dash-lessons-week',  '+' + (data.weeklyLessons || 0) + ' this week');
-  _setEl('dash-vocab-week',    '+' + (data.weeklyVocab   || 0) + ' this week');
-  _setEl('dash-kanji-week',    '+' + (data.weeklyKanji   || 0) + ' this week');
-  _setEl('dash-accuracy-week', '↑ ' + (data.weeklyAccuracyDelta || 0) + '% this week');
-
-  // Level & XP bar
-  _setEl('dash-level',    'Level ' + (data.level || 1));
-  _setEl('dash-level-xp', (data.levelXP || 0) + ' / ' + (data.levelXPRequired || 200) + ' XP');
-  const lvlPct = Math.min(100, Math.round(((data.levelXP || 0) / (data.levelXPRequired || 200)) * 100));
-  _setAttr('dash-level-bar', 'style', 'width:' + lvlPct + '%');
-}
-
-function _setEl(id, val) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = val;
-}
-function _setAttr(id, attr, val) {
-  const el = document.getElementById(id);
-  if (el) el.setAttribute(attr, val) || (el.style = val.replace('style:',''));
-  if (el && attr === 'style') el.style.cssText = val.replace('style:','').replace('style=','');
-  if (el && attr === 'style') { const m = val.match(/width:([\d.]+%)/); if(m) el.style.width = m[1]; }
-}
-
-// ── Expose XP adder for other scripts ───────────────────────
-window._nzAddXP = async (amount) => {
-  const user = auth.currentUser;
-  if (!user) return;
-  const ref  = doc(db, 'users', user.uid);
-  const snap = await getDoc(ref);
-  if (!snap.exists()) return;
-  const d    = snap.data();
-  const newXP    = (d.xp    || 0) + amount;
-  const newLvlXP = (d.levelXP || 0) + amount;
-  const lvlReq   = d.levelXPRequired || 200;
-  const lvlUp    = newLvlXP >= lvlReq;
-  await updateDoc(ref, {
-    xp:      newXP,
-    levelXP: lvlUp ? newLvlXP - lvlReq : newLvlXP,
-    level:   lvlUp ? (d.level || 1) + 1 : (d.level || 1)
-  });
-  const fresh = await getDoc(ref);
-  updateDashboardStats(fresh.data());
-  document.dispatchEvent(new CustomEvent('nz:xpUpdated', { detail: fresh.data() }));
-};
-
-// ── Main auth state listener ─────────────────────────────────
-onAuthStateChanged(auth, async (firebaseUser) => {
-  if (!firebaseUser) {
-    // Not logged in → redirect
-    window.location.replace('login.html');
-    return;
-  }
-
-  // ── Render profile badge immediately ──────────────────────
-  const uData = {
-    displayName: firebaseUser.displayName || firebaseUser.email || 'User',
-    email:       firebaseUser.email       || '',
-    photoURL:    firebaseUser.photoURL    || ''
-  };
-  try { localStorage.setItem('nz_user', JSON.stringify(uData)); } catch(e) {}
-  if (typeof window.nzRenderProfile === 'function') {
-    window.nzRenderProfile(uData.displayName, uData.photoURL, uData.email);
-  }
-
-  // ── Update greeting ───────────────────────────────────────
-  const shortName = (uData.displayName).split(' ')[0].split('@')[0];
-  updateGreeting(shortName);
-
-  // ── Load/create Firestore user doc ────────────────────────
-  const userRef  = doc(db, 'users', firebaseUser.uid);
-  let   userSnap = await getDoc(userRef);
-
-  if (!userSnap.exists()) {
-    await setDoc(userRef, {
-      displayName:         uData.displayName,
-      email:               uData.email,
-      photoURL:            uData.photoURL,
-      xp:                  0,
-      xpGoal:              50,
-      streak:              1,
-      kanjiCount:          0,
-      lessonsCompleted:    0,
-      vocabMastered:       0,
-      quizAccuracy:        0,
-      level:               1,
-      levelXP:             0,
-      levelXPRequired:     200,
-      weeklyKanji:         0,
-      weeklyLessons:       0,
-      weeklyVocab:         0,
-      weeklyAccuracyDelta: 0,
-      lastLogin:           serverTimestamp(),
-      createdAt:           serverTimestamp()
-    });
-    userSnap = await getDoc(userRef);
-  } else {
-    await updateDoc(userRef, { lastLogin: serverTimestamp() });
-    userSnap = await getDoc(userRef);
-  }
-
-  const data = userSnap.data();
-  window._nzUser     = firebaseUser;
-  window._nzUserData = data;
-
-  // ── Update all dashboard stats ────────────────────────────
-  updateDashboardStats(data);
-
-  // ── Fire event for other scripts ─────────────────────────
-  document.dispatchEvent(new CustomEvent('nz:userReady', {
-    detail: { user: firebaseUser, data }
-  }));
-});
-</script>
+<script type="module" src="auth-guard.js"></script>
 
 </body>
 </html>
