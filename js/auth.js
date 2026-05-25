@@ -1,6 +1,6 @@
 // ============================================================
 // NihongoZen — auth.js
-// Google Login + Email/Password + Phone OTP
+// Google Login + Email/Password
 // Apple / Facebook: Coming Soon placeholders
 // Dashboard redirect: index.html (fixed from dashboard.html)
 // ============================================================
@@ -9,8 +9,7 @@ import { initializeApp }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getAuth, GoogleAuthProvider, signInWithPopup,
-  sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink,
-  RecaptchaVerifier, signInWithPhoneNumber
+  sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 // ── Firebase Config ───────────────────────────────────────────
@@ -72,53 +71,6 @@ if (isSignInWithEmailLink(auth, window.location.href)) {
   }
 }
 
-// ── PHONE OTP ─────────────────────────────────────────────────
-let recaptchaVerifier    = null;
-let phoneConfirmResult   = null;
-
-window.initPhoneOTP = (containerId, sendBtnId) => {
-  const sendBtn = document.getElementById(sendBtnId);
-  if (!sendBtn) return;
-
-  sendBtn.addEventListener("click", async () => {
-    const phoneInput = document.getElementById("phoneInput") || document.getElementById("login-phone");
-    if (!phoneInput) return;
-    const phone = phoneInput.value.trim();
-    if (!phone.startsWith("+")) return showLoginError('Include country code, e.g. "+91 98765 43210"');
-
-    // Clear old verifier
-    if (recaptchaVerifier) { try { recaptchaVerifier.clear(); } catch(e) {} }
-    const container = document.getElementById(containerId);
-    if (container) container.innerHTML = "";
-
-    try {
-      recaptchaVerifier = new RecaptchaVerifier(auth, containerId, { size: "invisible" });
-      phoneConfirmResult = await signInWithPhoneNumber(auth, phone, recaptchaVerifier);
-      showLoginSuccess("OTP sent! Check your phone.");
-      // Show OTP input
-      const otpSection = document.getElementById("otp-section");
-      if (otpSection) otpSection.style.display = "block";
-    } catch (err) {
-      showLoginError(err.message);
-      if (recaptchaVerifier) { try { recaptchaVerifier.clear(); } catch(e) {} recaptchaVerifier = null; }
-    }
-  });
-};
-
-window.verifyPhoneOTP = async () => {
-  if (!phoneConfirmResult) return showLoginError("Please request an OTP first.");
-  const code = document.getElementById("otpInput")?.value?.trim();
-  if (!code) return showLoginError("Please enter the 6-digit OTP.");
-  try {
-    await phoneConfirmResult.confirm(code);
-    window.location.replace(DASHBOARD);
-  } catch (err) {
-    showLoginError(err.code === "auth/invalid-verification-code"
-      ? "Incorrect OTP. Please try again."
-      : err.message);
-  }
-};
-
 // ── APPLE / FACEBOOK — Coming Soon ───────────────────────────
 ["btn-apple-login","btn-apple-signup","btn-facebook-login"].forEach(id => {
   document.getElementById(id)?.addEventListener("click", (e) => {
@@ -137,7 +89,7 @@ function showLoginError(msg) {
   else alert(msg);
 }
 function showLoginSuccess(msg) {
-  const el = document.getElementById("login-success") || document.getElementById("success-msg") || document.getElementById("phone-login-success");
+  const el = document.getElementById("login-success") || document.getElementById("success-msg");
   if (el) { el.textContent = msg; el.style.display = "block"; }
 }
 
