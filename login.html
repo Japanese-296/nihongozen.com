@@ -272,63 +272,7 @@
       padding: 2px 6px; border-radius: 20px; letter-spacing: .03em;
     }
 
-    /* ── Phone OTP section ── */
-    .phone-section {
-      display: none;
-      border: 1.5px solid var(--sakura-mid);
-      border-radius: 16px; padding: 1.1rem;
-      margin-top: .3rem; margin-bottom: .3rem;
-      background: linear-gradient(135deg, #fff5f8, #fff0f4);
-      grid-column: 1/-1;
-      animation: fadeUp .25s ease;
-    }
-    .phone-section.show { display: block; }
-    .phone-section h4 {
-      font-size: .82rem; font-weight: 700; color: var(--ink-soft);
-      margin-bottom: .7rem; letter-spacing: .04em; text-transform: uppercase;
-    }
-    .phone-input-row { display: flex; gap: .5rem; }
-    .phone-input-row input {
-      flex: 1; padding: .7rem .9rem; border: 1.5px solid var(--border);
-      border-radius: 11px; font-size: .88rem; font-family: inherit;
-      outline: none; transition: border-color .2s, box-shadow .2s; background: #fff;
-    }
-    .phone-input-row input:focus {
-      border-color: var(--sakura);
-      box-shadow: 0 0 0 3px rgba(232,87,138,.1);
-    }
-    .btn-send-otp {
-      padding: .7rem 1rem; background: linear-gradient(135deg,#e8578a,#c2185b);
-      color: #fff; border: none; border-radius: 11px;
-      font-size: .8rem; font-weight: 700; cursor: pointer;
-      white-space: nowrap; font-family: inherit;
-      box-shadow: 0 3px 10px rgba(194,24,91,.3);
-      transition: all .2s; flex-shrink: 0;
-    }
-    .btn-send-otp:hover { transform: translateY(-1px); box-shadow: 0 5px 14px rgba(194,24,91,.38); }
-    .btn-send-otp:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 
-    .otp-verify-row { display: none; margin-top: .7rem; }
-    .otp-verify-row.show { display: flex; gap: .5rem; }
-    .otp-verify-row input {
-      flex: 1; padding: .72rem .9rem; border: 1.5px solid var(--border);
-      border-radius: 11px; font-size: 1.15rem; font-family: inherit;
-      outline: none; transition: border-color .2s;
-      letter-spacing: .25em; text-align: center; background: #fff; color: var(--ink);
-    }
-    .otp-verify-row input:focus { border-color: var(--sakura); box-shadow: 0 0 0 3px rgba(232,87,138,.1); }
-    .btn-verify-otp {
-      padding: .72rem 1rem;
-      background: linear-gradient(135deg, #0ea874, #059669);
-      color: #fff; border: none; border-radius: 11px;
-      font-size: .82rem; font-weight: 700; cursor: pointer;
-      white-space: nowrap; font-family: inherit;
-      box-shadow: 0 3px 10px rgba(14,168,116,.3);
-      transition: all .2s; flex-shrink: 0;
-    }
-    .btn-verify-otp:hover { transform: translateY(-1px); }
-    .otp-resend { font-size: .73rem; color: var(--gray); text-align: center; margin-top: .55rem; }
-    .otp-resend a { color: var(--sakura); cursor: pointer; font-weight: 600; }
 
     /* ── Panels ── */
     .auth-panel { display: none; }
@@ -468,31 +412,6 @@
             Facebook
           </button>
 
-          <!-- Phone OTP — full width -->
-          <button class="btn-social full" id="btn-phone-toggle" onclick="togglePhoneSection('login')">
-            <span style="font-size:1rem">📱</span>
-            Continue with Phone OTP
-          </button>
-
-        <!-- Phone OTP section (login) -->
-        <div class="phone-section" id="phone-section-login">
-          <h4>📱 Phone Number Verification</h4>
-          <div class="phone-input-row">
-            <input type="tel" id="login-phone" placeholder="+91 98765 43210"/>
-            <button class="btn-send-otp" id="btn-send-login-otp" onclick="sendOTP('login')">Send OTP</button>
-          </div>
-          <div id="recaptcha-container-login"></div>
-          <div class="otp-verify-row" id="otp-row-login">
-            <input type="text" id="login-otp" placeholder="6-digit code" maxlength="6" inputmode="numeric"/>
-            <button class="btn-verify-otp" onclick="verifyOTP('login')">Verify</button>
-          </div>
-          <div class="otp-resend" id="otp-resend-login" style="display:none">
-            Didn't receive it? <a onclick="sendOTP('login')">Resend OTP</a>
-          </div>
-          <div class="msg-error" id="phone-login-error"></div>
-          <div class="msg-success" id="phone-login-success"></div>
-        </div>
-
 
         </div><!-- /social-grid -->
         <!-- Hidden Facebook btn (kept for existing JS references) -->
@@ -546,31 +465,7 @@
             Facebook
           </button>
 
-          <!-- Phone OTP — full width -->
-          <button class="btn-social full" id="btn-phone-toggle-signup" onclick="togglePhoneSection('signup')">
-            <span style="font-size:1rem">📱</span>
-            Sign up with Phone OTP
-          </button>
         </div><!-- /social-grid -->
-
-        <!-- Phone OTP section (signup) -->
-        <div class="phone-section" id="phone-section-signup">
-          <h4>📱 Phone Number Verification</h4>
-          <div class="phone-input-row">
-            <input type="tel" id="signup-phone-otp" placeholder="+91 98765 43210"/>
-            <button class="btn-send-otp" id="btn-send-signup-otp" onclick="sendOTP('signup')">Send OTP</button>
-          </div>
-          <div id="recaptcha-container-signup"></div>
-          <div class="otp-verify-row" id="otp-row-signup">
-            <input type="text" id="signup-otp" placeholder="6-digit code" maxlength="6" inputmode="numeric"/>
-            <button class="btn-verify-otp" onclick="verifyOTP('signup')">Verify &amp; Sign Up</button>
-          </div>
-          <div class="otp-resend" id="otp-resend-signup" style="display:none">
-            Didn't receive it? <a onclick="sendOTP('signup')">Resend OTP</a>
-          </div>
-          <div class="msg-error" id="phone-signup-error"></div>
-          <div class="msg-success" id="phone-signup-success"></div>
-        </div>
 
       </div>
     </div>
@@ -633,7 +528,6 @@
   import {
     getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
     GoogleAuthProvider, FacebookAuthProvider, signInWithPopup,
-    RecaptchaVerifier, signInWithPhoneNumber,
     sendEmailVerification, onAuthStateChanged, updateProfile
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import { getFirestore, doc, setDoc, getDoc, serverTimestamp }
@@ -654,9 +548,6 @@
   fbProvider.addScope('email');
   fbProvider.addScope('public_profile');
 
-  // Track phone confirmation results per section
-  let confirmationResults = { login: null, signup: null };
-  let recaptchaVerifiers  = { login: null, signup: null };
   let lastSignedUpUser    = null;
 
   // Auto-redirect if already logged in
@@ -784,92 +675,6 @@
     }
   };
 
-  // ── Phone OTP ─────────────────────────────────────────────────────────────
-  window.sendOTP = async (section) => {
-    const phoneInputId = section === "login" ? "login-phone" : "signup-phone-otp";
-    const errId        = `phone-${section}-error`;
-    const sucId        = `phone-${section}-success`;
-    const rcContainerId = `recaptcha-container-${section}`;
-    const otpRowId     = `otp-row-${section}`;
-    const resendId     = `otp-resend-${section}`;
-    const sendBtnId    = `btn-send-${section}-otp`;
-
-    hideMsg(errId); hideMsg(sucId);
-
-    const phone = document.getElementById(phoneInputId).value.trim();
-    if (!phone) { showMsg(errId, "Please enter your phone number with country code (e.g. +91 98765 43210)"); return; }
-    if (!phone.startsWith("+")) { showMsg(errId, 'Phone number must include country code (e.g. "+91 98765 43210")'); return; }
-
-    setLoading(sendBtnId, true);
-
-    try {
-      // Clear old reCAPTCHA if it exists
-      if (recaptchaVerifiers[section]) {
-        try { recaptchaVerifiers[section].clear(); } catch(e) {}
-        recaptchaVerifiers[section] = null;
-        document.getElementById(rcContainerId).innerHTML = "";
-      }
-
-      // Create invisible reCAPTCHA
-      recaptchaVerifiers[section] = new RecaptchaVerifier(auth, rcContainerId, {
-        size: "invisible",
-        callback: () => {},
-        "expired-callback": () => {
-          showMsg(errId, "reCAPTCHA expired. Please try again.");
-          setLoading(sendBtnId, false);
-        }
-      });
-
-      const confirmResult = await signInWithPhoneNumber(auth, phone, recaptchaVerifiers[section]);
-      confirmationResults[section] = confirmResult;
-
-      // Show OTP input row
-      document.getElementById(otpRowId).classList.add("show");
-      document.getElementById(resendId).style.display = "block";
-      showMsg(sucId, "OTP sent! Check your phone.", false);
-      document.getElementById(sucId).style.color = "#16a34a";
-
-    } catch (e) {
-      const msgs = {
-        "auth/invalid-phone-number": "Invalid phone number. Include country code (e.g. +91...).",
-        "auth/too-many-requests":    "Too many requests. Please wait and try again.",
-        "auth/quota-exceeded":       "SMS quota exceeded. Please try again later.",
-      };
-      showMsg(errId, msgs[e.code] || "Failed to send OTP: " + e.message);
-      // Reset reCAPTCHA on error
-      if (recaptchaVerifiers[section]) {
-        try { recaptchaVerifiers[section].clear(); } catch(err) {}
-        recaptchaVerifiers[section] = null;
-        document.getElementById(rcContainerId).innerHTML = "";
-      }
-    } finally { setLoading(sendBtnId, false); }
-  };
-
-  window.verifyOTP = async (section) => {
-    const otpInputId = section === "login" ? "login-otp" : "signup-otp";
-    const errId      = `phone-${section}-error`;
-    const sucId      = `phone-${section}-success`;
-
-    hideMsg(errId); hideMsg(sucId);
-
-    const code = document.getElementById(otpInputId).value.trim();
-    if (!code || code.length !== 6) { showMsg(errId, "Please enter the 6-digit OTP."); return; }
-
-    if (!confirmationResults[section]) { showMsg(errId, "Please request an OTP first."); return; }
-
-    try {
-      const result = await confirmationResults[section].confirm(code);
-      await createUserProfile(result.user);
-      window.location.replace(DASHBOARD);
-    } catch (e) {
-      const msgs = {
-        "auth/invalid-verification-code": "Incorrect OTP. Please check and try again.",
-        "auth/code-expired": "OTP has expired. Please request a new one.",
-      };
-      showMsg(errId, msgs[e.code] || "Verification failed: " + e.message);
-    }
-  };
-
   // ── Facebook Login ───────────────────────────────────────────────────────
   window.handleFacebookLogin = async () => {
     // All Facebook buttons (grid + hidden reference button)
@@ -935,15 +740,6 @@
       if (title) title.textContent = "Join NihongoZen 🎌";
       if (sub)   sub.textContent   = "Create your free account and start learning";
     }
-  }
-
-  function togglePhoneSection(section) {
-    const id  = "phone-section-" + section;
-    const el  = document.getElementById(id);
-    const btn = document.getElementById("btn-phone-toggle" + (section==="signup" ? "-signup" : ""));
-    if (!el) return;
-    const open = el.classList.toggle("show");
-    if (btn) btn.style.borderColor = open ? "var(--sakura)" : "";
   }
 
   function showComingSoon(feature) {
