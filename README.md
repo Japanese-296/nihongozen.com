@@ -1,60 +1,32 @@
-# NihongoZen — HTML/CSS/JS Build
+# NihongoZen Static HTML/CSS/JS Build
 
-Converted from Next.js source into a clean, secure, multi-file static website.
+This folder is a GitHub Pages-ready conversion of the original Next.js/TypeScript NihongoZen app.
 
-## 📁 Folder Structure
+## Run Locally
 
-```
-nihongozen/
-├── index.html          ← Main app (SPA entry point)
-├── pages/
-│   └── login.html      ← Login / Sign-up page
-├── css/
-│   ├── tokens.css      ← Design tokens, resets, animations, utilities
-│   ├── layout.css      ← Sidebar, topbar, mobile nav
-│   └── components.css  ← All component styles (cards, kanji, vocab, etc.)
-└── js/
-    ├── core.js         ← Security utils, router, toast, speech, state
-    ├── data.js         ← All app data (kanji, vocab, grammar, etc.)
-    ├── pomodoro.js     ← Pomodoro timer module
-    └── pages.js        ← All page renderers
+Use any static server from this folder, then open `login.html` in Chrome.
+
+```powershell
+python -m http.server 4173
 ```
 
-## 🚀 How to Run
+The app uses `fetch()` for `data/*.json`, so opening HTML files directly from disk is not recommended.
 
-Just open `index.html` in a browser — no build step, no server required.
+## Firebase Setup
 
-For best results use a local server:
-```bash
-npx serve .
-# or
-python3 -m http.server 3000
-```
+1. Create a fresh Firebase project.
+2. Enable the sign-in providers you want, such as Google, email link, or phone OTP.
+3. Add your domain and GitHub Pages domain to Firebase Authorized Domains.
+4. Replace the placeholder public web config in `js/firebase-config.js`.
 
-## 🔐 Authentication
+Only Firebase public web config belongs in frontend JavaScript. Do not add service-role keys, private keys, database passwords, or `.env` values.
 
-- Login page: `pages/login.html`
-- Demo login auto-bypasses to dashboard
-- Google Auth placeholder is in `pages/login.html` → `handleGoogleAuth()`
-- Replace that function body with your real Google OAuth flow
+## Data And Audio
 
-## 🌐 Language Toggle
+Learning content is loaded dynamically from JSON files in `data/`.
 
-EN/日本語 toggle in the topbar switches all UI labels live.
+Audio playback is MP3/WAV-only. Add files under `assets/audio/` using the `audioPath` values in the JSON files. Missing files are handled with an in-app message instead of breaking the page.
 
-## ✅ Working Features
+## Static Hosting Security Limits
 
-- Dashboard (XP ring, stats, JLPT cards, kanji grid, vocab, pomodoro, activity)
-- Kanji study with modal, mark as learned, N5/N4/N3 tabs
-- Vocab grid + flashcard mode (keyboard: ← → Space)
-- Grammar accordion with examples
-- Listening dialogues with auto-play + comprehension quiz
-- Reading passages with read-aloud + quiz
-- Kana chart (Hiragana, Katakana, Dakuten, Combinations)
-- Progress page with XP chart, skill bars, achievements
-- Pomodoro timer (Focus / Short Break / Long Break)
-- JLPT N5/N4/N3 detail pages
-- Profile page
-- Sidebar collapse, mobile drawer, mobile bottom nav
-- XSS-safe rendering throughout
-- Session auth with sessionStorage
+GitHub Pages cannot provide server-only session controls such as HttpOnly cookies, CSRF protection, refresh-token rotation, server-side RBAC, secure password hashing, secret managers, or private database access. Firebase Auth handles authentication outside this static frontend; any truly protected data must be enforced by Firebase Security Rules or a backend service.

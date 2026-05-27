@@ -1,21 +1,8 @@
-# Security Policy
+# Security Notes
 
-## Supported Versions
-
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
-
-| Version | Supported          |
-| ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
-
-## Reporting a Vulnerability
-
-Use this section to tell people how to report a vulnerability.
-
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+- Do not commit `.env` files or private API keys.
+- Do not reuse API keys from the source zip. Create fresh Firebase public web config values.
+- The static frontend only needs Firebase public client config for the selected auth plan.
+- OpenAI, Gemini, Anthropic, Perplexity, Stripe secret keys, Supabase service keys, database credentials, and cloud secret values must not appear in this app.
+- GitHub Pages cannot enforce HttpOnly cookies, SameSite server cookies, CSRF tokens, backend RBAC, refresh-token rotation, server-side malware scanning, encrypted backups, or private DB networking.
+- Production authorization must be enforced with Firebase Security Rules or a backend API, never with frontend role checks alone.
