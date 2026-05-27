@@ -1,17 +1,18 @@
 // ============================================================
-// NihongoZen — auth.js
-// Google Login + Email/Password + Phone OTP
-// Apple / Facebook: Coming Soon placeholders
-// Dashboard redirect: index.html (fixed from dashboard.html)
+// NihongoZen — auth-guard.js
+// Protects: index.html, jlpt-practice.html
+// Unauthenticated users → redirected to login.html instantly
+// No flicker: page hidden until auth check completes
 // ============================================================
 
 import { initializeApp }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
-  getAuth, GoogleAuthProvider, signInWithPopup,
-  sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink,
-  RecaptchaVerifier, signInWithPhoneNumber
+  getAuth, onAuthStateChanged, signOut
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getFirestore, doc, getDoc, setDoc, updateDoc, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 // ── Firebase Config ───────────────────────────────────────────
 const firebaseConfig = {
@@ -24,121 +25,116 @@ const firebaseConfig = {
   measurementId:     "G-1WTJ5ML3R2"
 };
 
-const app      = initializeApp(firebaseConfig);
-const auth     = getAuth(app);
-const provider = new GoogleAuthProvider();
-provider.setCustomParameters({ prompt: "select_account" });
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
 
-// ── DESTINATION ───────────────────────────────────────────────
-const DASHBOARD = "index.html"; // Fixed: was dashboard.html
+// Hide page immediately — prevents flash of protected content
+document.documentElement.style.visibility = "hidden";
 
-// ── GOOGLE LOGIN ──────────────────────────────────────────────
-["googleLogin", "loginBtn", "btn-google-login", "btn-google-signup"].forEach(id => {
-  document.getElementById(id)?.addEventListener("click", async () => {
-    try {
-      await signInWithPopup(auth, provider);
-      window.location.replace(DASHBOARD);
-    } catch (err) {
-      if (err.code !== "auth/popup-closed-by-user") showLoginError(err.message);
-    }
-  });
+// Fallback: show page after 4s if Firebase is slow / offline
+const fallbackTimer = setTimeout(() => {
+  document.documentElement.style.visibility = "visible";
+}, 4000);
+
+// ── Auth State Check ──────────────────────────────────────────
+onAuthStateChanged(auth, async (user) => {
+  clearTimeout(fallbackTimer);
+
+  if (!user) {
+    // Not logged in → redirect immediately
+    window.location.replace("login.html");
+    return;
+  }
+
+  // Logged in — show the page
+  document.documentElement.style.visibility = "visible";
+
+  // Expose globally for index.html scripts
+  window._nzAuth    = auth;
+  window._nzDb      = db;
+  window._nzUser    = user;
+  window._nzSignOut = () => signOut(auth).then(() => window.location.replace("login.html"));
+
+  // ── Load or create Firestore user document ──────────────────
+  const userRef  = doc(db, "users", user.uid);
+  const userSnap = await getDoc(userRef);
+
+  if (!userSnap.exists()) {
+    // First login — create default profile
+    await setDoc(userRef, {
+      uid:              user.uid,
+      displayName:      user.displayName || "Learner",
+      email:            user.email       || "",
+      photoURL:         user.photoURL    || "",
+      phone:            user.phoneNumber || "",
+      xp:               0,
+      xpGoal:           50,
+      streak:           1,
+      kanjiCount:       0,
+      lessonsCompleted: 0,
+      vocabMastered:    0,
+      quizAccuracy:     0,
+      level:            1,
+      levelXP:          0,
+      levelXPRequired:  200,
+      weeklyKanji:      0,
+      weeklyLessons:    0,
+      weeklyVocab:      0,
+      weeklyAccuracyDelta: 0,
+      lastLogin:        serverTimestamp(),
+      createdAt:        serverTimestamp()
+    });
+  } else {
+    await updateDoc(userRef, { lastLogin: serverTimestamp() });
+  }
+
+  // ── Fetch data and populate dashboard ──────────────────────
+  const freshSnap = await getDoc(userRef);
+  const data      = freshSnap.data();
+  window._nzUserData = data;
+
+  // Fire event so index.html scripts can react
+  document.dispatchEvent(new CustomEvent("nz:userReady", {
+    detail: { user, data }
+  }));
 });
 
-// ── EMAIL LINK LOGIN ──────────────────────────────────────────
-const actionCodeSettings = {
-  url:             window.location.origin + "/" + DASHBOARD,
-  handleCodeInApp: true
-};
-
-document.getElementById("emailLogin")?.addEventListener("click", async () => {
-  const email = document.getElementById("emailInput")?.value?.trim();
-  if (!email) return showLoginError("Please enter your email address.");
-  try {
-    await sendSignInLinkToEmail(auth, email, actionCodeSettings);
-    localStorage.setItem("nz_emailForSignIn", email);
-    showLoginSuccess("Login link sent! Check your inbox.");
-  } catch (err) {
-    showLoginError(err.message);
-  }
-});
-
-if (isSignInWithEmailLink(auth, window.location.href)) {
-  let email = localStorage.getItem("nz_emailForSignIn");
-  if (!email) email = window.prompt("Please confirm your email address:");
-  if (email) {
-    signInWithEmailLink(auth, email, window.location.href)
-      .then(() => { localStorage.removeItem("nz_emailForSignIn"); window.location.replace(DASHBOARD); })
-      .catch(err => showLoginError(err.message));
-  }
-}
-
-// ── PHONE OTP ─────────────────────────────────────────────────
-let recaptchaVerifier    = null;
-let phoneConfirmResult   = null;
-
-window.initPhoneOTP = (containerId, sendBtnId) => {
-  const sendBtn = document.getElementById(sendBtnId);
-  if (!sendBtn) return;
-
-  sendBtn.addEventListener("click", async () => {
-    const phoneInput = document.getElementById("phoneInput") || document.getElementById("login-phone");
-    if (!phoneInput) return;
-    const phone = phoneInput.value.trim();
-    if (!phone.startsWith("+")) return showLoginError('Include country code, e.g. "+91 98765 43210"');
-
-    // Clear old verifier
-    if (recaptchaVerifier) { try { recaptchaVerifier.clear(); } catch(e) {} }
-    const container = document.getElementById(containerId);
-    if (container) container.innerHTML = "";
-
-    try {
-      recaptchaVerifier = new RecaptchaVerifier(auth, containerId, { size: "invisible" });
-      phoneConfirmResult = await signInWithPhoneNumber(auth, phone, recaptchaVerifier);
-      showLoginSuccess("OTP sent! Check your phone.");
-      // Show OTP input
-      const otpSection = document.getElementById("otp-section");
-      if (otpSection) otpSection.style.display = "block";
-    } catch (err) {
-      showLoginError(err.message);
-      if (recaptchaVerifier) { try { recaptchaVerifier.clear(); } catch(e) {} recaptchaVerifier = null; }
-    }
+// ── XP update helper ─────────────────────────────────────────
+window._nzAddXP = async (amount) => {
+  const user = auth.currentUser;
+  if (!user) return;
+  const userRef = doc(db, "users", user.uid);
+  const snap    = await getDoc(userRef);
+  if (!snap.exists()) return;
+  const d        = snap.data();
+  const newXP    = (d.xp    || 0) + amount;
+  const newLvlXP = (d.levelXP || 0) + amount;
+  const req      = d.levelXPRequired || 200;
+  const lvlUp    = newLvlXP >= req;
+  await updateDoc(userRef, {
+    xp:      newXP,
+    levelXP: lvlUp ? newLvlXP - req : newLvlXP,
+    level:   lvlUp ? (d.level || 1) + 1 : (d.level || 1)
   });
+  const fresh = await getDoc(userRef);
+  document.dispatchEvent(new CustomEvent("nz:xpUpdated", { detail: fresh.data() }));
 };
 
-window.verifyPhoneOTP = async () => {
-  if (!phoneConfirmResult) return showLoginError("Please request an OTP first.");
-  const code = document.getElementById("otpInput")?.value?.trim();
-  if (!code) return showLoginError("Please enter the 6-digit OTP.");
-  try {
-    await phoneConfirmResult.confirm(code);
-    window.location.replace(DASHBOARD);
-  } catch (err) {
-    showLoginError(err.code === "auth/invalid-verification-code"
-      ? "Incorrect OTP. Please try again."
-      : err.message);
-  }
+// ── Streak update helper ──────────────────────────────────────
+window._nzUpdateStreak = async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+  const userRef  = doc(db, "users", user.uid);
+  const snap     = await getDoc(userRef);
+  if (!snap.exists()) return;
+  const d         = snap.data();
+  const lastLogin = d.lastLogin?.toDate?.() || new Date(0);
+  const now       = new Date();
+  const diffDays  = Math.floor((now - lastLogin) / 86400000);
+  const newStreak = diffDays === 1 ? (d.streak || 0) + 1
+                  : diffDays  > 1 ? 1
+                  : d.streak  || 1;
+  await updateDoc(userRef, { streak: newStreak, lastLogin: serverTimestamp() });
+  return newStreak;
 };
-
-// ── APPLE / FACEBOOK — Coming Soon ───────────────────────────
-["btn-apple-login","btn-apple-signup","btn-facebook-login"].forEach(id => {
-  document.getElementById(id)?.addEventListener("click", (e) => {
-    e.preventDefault();
-    if (typeof showComingSoon === "function") {
-      const name = id.includes("apple") ? "Apple Sign-In" : "Facebook Sign-In";
-      showComingSoon(name);
-    }
-  });
-});
-
-// ── UI helpers ────────────────────────────────────────────────
-function showLoginError(msg) {
-  const el = document.getElementById("login-error") || document.getElementById("error-msg");
-  if (el) { el.textContent = msg; el.style.display = "block"; }
-  else alert(msg);
-}
-function showLoginSuccess(msg) {
-  const el = document.getElementById("login-success") || document.getElementById("success-msg") || document.getElementById("phone-login-success");
-  if (el) { el.textContent = msg; el.style.display = "block"; }
-}
-
-window.goSignup = () => { window.location.href = "signup.html"; };
