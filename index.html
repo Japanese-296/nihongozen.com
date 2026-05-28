@@ -6,10 +6,12 @@
 <meta name="description" content="NihongoZen — Japanese Language Learning Platform"/>
 <meta name="theme-color" content="#0F0F14"/>
 <meta http-equiv="Content-Security-Policy"
-  content="default-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com;
+  content="default-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://www.gstatic.com https://apis.google.com;
            style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-           script-src 'self' 'unsafe-inline';
-           img-src 'self' data:;
+           script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://accounts.google.com;
+           connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com;
+           frame-src https://nihongo-zen-cd97d.firebaseapp.com https://accounts.google.com;
+           img-src 'self' data: https:;
            font-src https://fonts.gstatic.com;
            media-src 'self';"/>
 <title>NihongoZen — Japanese Learning</title>
@@ -26,50 +28,113 @@
 </head>
 <body>
 
+<!-- ── Loading overlay (shown while Firebase checks auth) ── -->
+<div id="nz-auth-loading" style="
+  position:fixed;inset:0;z-index:9999;
+  background:#0F0F14;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:16px;font-family:'Plus Jakarta Sans',sans-serif;">
+  <div style="
+    width:48px;height:48px;border-radius:50%;
+    border:3px solid #2A2A38;
+    border-top-color:#E8446A;
+    animation:nzSpin 0.8s linear infinite;">
+  </div>
+  <p style="color:#8888A0;font-size:13px;letter-spacing:0.05em;">NihongoZen を読み込み中…</p>
+</div>
+<style>
+@keyframes nzSpin { to { transform:rotate(360deg); } }
+</style>
+
 <!-- All JS (order matters) -->
 <script src="js/core.js"></script>
 <script src="js/data.js"></script>
 <script src="js/pomodoro.js"></script>
 <script src="js/pages.js"></script>
 
-<script>
-'use strict';
-/* =========================================================
-   APP BOOTSTRAP
-   ========================================================= */
-(function init() {
-  // Ensure demo session
-  Session.ensureDemo();
+<!-- Firebase Auth SDK -->
+<script type="module">
+  import { initializeApp }        from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+  import { getAuth, onAuthStateChanged, signOut }
+                                   from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 
-  // Build shell
-  renderShell();
+  /* ── Firebase Config ─────────────────────────────────── */
+  const firebaseConfig = {
+    apiKey:            'AIzaSyCP2Uwo1lx996q0l3nkC7RhAesVuIHEXiA',
+    authDomain:        'nihongo-zen-cd97d.firebaseapp.com',
+    projectId:         'nihongo-zen-cd97d',
+    storageBucket:     'nihongo-zen-cd97d.firebasestorage.app',
+    messagingSenderId: '513320956483',
+    appId:             '1:513320956483:web:a1069825e0df3587f65af6',
+    measurementId:     'G-1WTJ5ML3R2',
+  };
 
-  // Register all routes
-  Router.register('dashboard', ()  => Pages.dashboard());
-  Router.register('kanji',     ()  => Pages.kanji());
-  Router.register('vocab',     (p) => Pages.vocab(p));
-  Router.register('grammar',   ()  => Pages.grammar());
-  Router.register('listening', ()  => Pages.listening());
-  Router.register('reading',   ()  => Pages.reading());
-  Router.register('kana',      ()  => Pages.kana());
-  Router.register('progress',  ()  => Pages.progress());
-  Router.register('timer',     ()  => Pages.timer());
-  Router.register('profile',   ()  => Pages.profile());
-  Router.register('jlpt-n5',   ()  => Pages.jlptLevel('n5'));
-  Router.register('jlpt-n4',   ()  => Pages.jlptLevel('n4'));
-  Router.register('jlpt-n3',   ()  => Pages.jlptLevel('n3'));
-  Router.register('jlpt-n2',   ()  => Pages.jlptLevel('n2'));
-  Router.register('jlpt-n1',   ()  => Pages.jlptLevel('n1'));
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
 
-  // Load dashboard on start
-  Router.go('dashboard');
+  /* Expose signOut globally so Topbar / profile page can call it */
+  window.firebaseSignOut = () =>
+    signOut(auth).then(() => window.location.replace('login.html'));
 
-  // Handle browser back/forward (hash-based routing)
-  window.addEventListener('popstate', () => {
-    const hash = window.location.hash.replace('#','') || 'dashboard';
-    Router.go(hash);
+  /* ── Auth Guard: redirect to login if not signed in ─── */
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      /* Brief delay so loader shows before redirect */
+      setTimeout(() => window.location.replace('login.html'), 200);
+      return;
+    }
+
+    /* User is authenticated — store minimal info for UI */
+    window.currentUser = {
+      uid:         user.uid,
+      displayName: user.displayName || user.email?.split('@')[0] || 'Learner',
+      email:       user.email,
+      photoURL:    user.photoURL,
+    };
+
+    /* Patch Session so core.js helpers that read Session.user still work */
+    if (typeof Session !== 'undefined' && typeof Session.setUser === 'function') {
+      Session.setUser(window.currentUser);
+    } else if (typeof Session !== 'undefined') {
+      Session.user = window.currentUser;
+    }
+
+    /* Hide loading overlay */
+    const loader = document.getElementById('nz-auth-loading');
+    if (loader) loader.style.display = 'none';
+
+    /* ── APP BOOTSTRAP ───────────────────────────────── */
+    'use strict';
+
+    // Build shell
+    renderShell();
+
+    // Register all routes
+    Router.register('dashboard', ()  => Pages.dashboard());
+    Router.register('kanji',     ()  => Pages.kanji());
+    Router.register('vocab',     (p) => Pages.vocab(p));
+    Router.register('grammar',   ()  => Pages.grammar());
+    Router.register('listening', ()  => Pages.listening());
+    Router.register('reading',   ()  => Pages.reading());
+    Router.register('kana',      ()  => Pages.kana());
+    Router.register('progress',  ()  => Pages.progress());
+    Router.register('timer',     ()  => Pages.timer());
+    Router.register('profile',   ()  => Pages.profile());
+    Router.register('jlpt-n5',   ()  => Pages.jlptLevel('n5'));
+    Router.register('jlpt-n4',   ()  => Pages.jlptLevel('n4'));
+    Router.register('jlpt-n3',   ()  => Pages.jlptLevel('n3'));
+    Router.register('jlpt-n2',   ()  => Pages.jlptLevel('n2'));
+    Router.register('jlpt-n1',   ()  => Pages.jlptLevel('n1'));
+
+    // Load dashboard on start
+    Router.go('dashboard');
+
+    // Handle browser back/forward (hash-based routing)
+    window.addEventListener('popstate', () => {
+      const hash = window.location.hash.replace('#','') || 'dashboard';
+      Router.go(hash);
+    });
   });
-})();
 </script>
 </body>
 </html>
