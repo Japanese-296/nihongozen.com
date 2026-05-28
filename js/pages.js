@@ -8,8 +8,24 @@
    SHARED SHELL — renders sidebar, topbar, mobile nav
    ========================================================= */
 function renderShell() {
-  const session = Session.get() || { user: 'Kenji Tanaka', level: 12 };
-  const initials = (session.user || 'K').charAt(0).toUpperCase();
+  // Use real Firebase user if available, fallback to session
+  const fbUser = window._nzUser;
+  const fbData = window._nzUserData;
+  const displayName = fbUser?.displayName || fbData?.displayName || Session.get()?.user || 'Learner';
+  const email = fbUser?.email || fbData?.email || '';
+  const photoURL = fbUser?.photoURL || fbData?.photoURL || '';
+  const level = fbData?.level || Session.get()?.level || 1;
+  const initials = (displayName || 'L').charAt(0).toUpperCase();
+
+  // Build avatar HTML — photo if available, else initials
+  const avatarHtml = photoURL
+    ? `<img src="${photoURL}" alt="${Security.esc(displayName)}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`
+    : initials;
+  const topbarAvatarHtml = photoURL
+    ? `<img src="${photoURL}" alt="${Security.esc(displayName)}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`
+    : initials;
+
+  const session = { user: displayName, level };
 
   document.body.innerHTML = `
 <div id="toast-container"></div>
@@ -43,10 +59,10 @@ function renderShell() {
     <nav class="sb-nav">${buildNavItems()}</nav>
     <div class="sb-user">
       <a class="sb-user-inner" href="#" onclick="Router.go('profile');return false;">
-        <div class="sb-avatar">${initials}</div>
+        <div class="sb-avatar">${avatarHtml}</div>
         <div class="sb-user-info">
-          <div class="sb-user-name">${Security.esc(session.user)}</div>
-          <div class="sb-user-sub">Level ${session.level} · Scholar</div>
+          <div class="sb-user-name">${Security.esc(displayName)}</div>
+          <div class="sb-user-sub">Level ${level} · Scholar</div>
         </div>
         <span class="sb-user-settings">⚙️</span>
       </a>
@@ -94,14 +110,14 @@ function renderShell() {
         </button>
         <div class="topbar-user-wrap" id="topbar-user-wrap">
           <button class="topbar-user-btn" onclick="toggleUserMenu()">
-            <div class="topbar-user-avatar">${initials}</div>
-            <span class="topbar-user-name">${Security.esc((session.user || '').split(' ')[0])}</span>
+            <div class="topbar-user-avatar">${topbarAvatarHtml}</div>
+            <span class="topbar-user-name">${Security.esc((displayName || '').split(' ')[0])}</span>
             <span class="topbar-user-caret">▾</span>
           </button>
           <div class="user-dropdown" id="user-dropdown" style="display:none;">
             <div class="user-dropdown-head">
-              <div class="name">${Security.esc(session.user)}</div>
-              <div class="sub">kenji@example.com</div>
+              <div class="name">${Security.esc(displayName)}</div>
+              <div class="sub">${Security.esc(email)}</div>
             </div>
             <div class="user-dropdown-item" onclick="Router.go('profile');closeUserMenu()">👤 Profile</div>
             <div class="user-dropdown-item" onclick="Toast.info('Settings coming soon');closeUserMenu()">⚙️ Settings</div>
@@ -529,7 +545,7 @@ const Pages = {
   </div>
   <div class="vocab-romaji">${w.romaji}</div>
   <div class="vocab-en">${w.en}</div>
-  <span class="vocab-cat badge" style="background:${levelDim(w.level)};color:${levelColor(w.level)}">${w.category}</span>
+  <span class="vocab-cat badge" style="background:${(typeof VocabCategoryColors!=='undefined'&&VocabCategoryColors[w.category])?VocabCategoryColors[w.category]+'22':levelDim(w.level)};color:${(typeof VocabCategoryColors!=='undefined'&&VocabCategoryColors[w.category])?VocabCategoryColors[w.category]:levelColor(w.level)}">${w.category}</span>
 </div>`).join('')}</div>`;
   },
 
@@ -555,7 +571,7 @@ const Pages = {
       <div class="flip-face flip-back fc-face" style="background:var(--card);border:1px solid var(--primary);">
         <div class="fc-content">
           <div class="fc-en">${w.en}</div>
-          <span class="badge" style="background:${levelDim(w.level)};color:${levelColor(w.level)}">${w.category}</span>
+          <span class="badge" style="background:${(typeof VocabCategoryColors!=='undefined'&&VocabCategoryColors[w.category])?VocabCategoryColors[w.category]+'22':levelDim(w.level)};color:${(typeof VocabCategoryColors!=='undefined'&&VocabCategoryColors[w.category])?VocabCategoryColors[w.category]:levelColor(w.level)}">${w.category}</span>
           <button onclick="event.stopPropagation();Speech.speakBoth('${w.jp}','${w.en}')"
             style="background:var(--primary-dim);color:var(--primary);border:1px solid var(--primary-dim);border-radius:8px;padding:5px 12px;font-size:11px;cursor:pointer;">
             🔊 ${lang === 'jp' ? '両方聞く' : 'Hear both'}
@@ -1224,17 +1240,26 @@ const Pages = {
      PROFILE PAGE
   -------------------------------------------------- */
   profile() {
-    const session = Session.get() || { user: 'Kenji Tanaka', level: 12 };
+    const fbUser = window._nzUser;
+    const fbData = window._nzUserData;
+    const displayName = fbUser?.displayName || fbData?.displayName || Session.get()?.user || 'Learner';
+    const email = fbUser?.email || fbData?.email || '';
+    const photoURL = fbUser?.photoURL || fbData?.photoURL || '';
+    const level = fbData?.level || Session.get()?.level || 1;
     const lang = State.state.lang;
-    const initials = (session.user || 'K').charAt(0).toUpperCase();
+    const initials = (displayName || 'L').charAt(0).toUpperCase();
+    const profileAvatar = photoURL
+      ? `<img src="${photoURL}" alt="${Security.esc(displayName)}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`
+      : initials;
 
     renderContent(`
 <div class="animate-fade-up">
   <div class="profile-hero">
-    <div class="profile-avatar">${initials}</div>
+    <div class="profile-avatar">${profileAvatar}</div>
     <div>
-      <div class="profile-name">${Security.esc(session.user)}</div>
-      <div class="profile-sub">${lang === 'jp' ? 'レベル12 スカラー · 14日連続 🔥' : 'Level 12 Scholar · 14-day streak 🔥'}</div>
+      <div class="profile-name">${Security.esc(displayName)}</div>
+      <div class="profile-email" style="font-size:12px;color:var(--fg-muted);margin-bottom:4px;">${Security.esc(email)}</div>
+      <div class="profile-sub">${lang === 'jp' ? `レベル${level} スカラー · 14日連続 🔥` : `Level ${level} Scholar · 14-day streak 🔥`}</div>
       <div class="profile-tags">
         <span class="badge badge-n4">N4 ${lang === 'jp' ? '目標' : 'Target'}</span>
         <span class="badge badge-n5">N5 ✓</span>
