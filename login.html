@@ -35,45 +35,6 @@
       --font-mono:            'JetBrains Mono', monospace;
     }
 
-// ─────────────────────────────────────────────────────────────
-// Firebase Auth (loaded via CDN to avoid requiring firebase pkg)
-// Import these from firebase if installed: npm install firebase
-// ─────────────────────────────────────────────────────────────
-import { initializeApp, getApps } from 'firebase/app';
-import {
-  getAuth,
-  GoogleAuthProvider,
-  signInWithPopup,
-  sendSignInLinkToEmail,
-  isSignInWithEmailLink,
-  signInWithEmailLink,
-  signInWithPhoneNumber,
-  RecaptchaVerifier,
-  ConfirmationResult,
-} from 'firebase/auth';
- 
-// ── Firebase Config ───────────────────────────────────────────
-const firebaseConfig = {
-  apiKey:            'AIzaSyCP2Uwo1lx996q0l3nkC7RhAesVuIHEXiA',
-  authDomain:        'nihongo-zen-cd97d.firebaseapp.com',
-  projectId:         'nihongo-zen-cd97d',
-  storageBucket:     'nihongo-zen-cd97d.firebasestorage.app',
-  messagingSenderId: '513320956483',
-  appId:             '1:513320956483:web:a1069825e0df3587f65af6',
-  measurementId:     'G-1WTJ5ML3R2',
-};
- 
-const app      = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
-const auth     = getAuth(app);
-const provider = new GoogleAuthProvider();
-provider.setCustomParameters({ prompt: 'select_account' });
- 
-const actionCodeSettings = {
-  url:             `${typeof window !== 'undefined' ? window.location.origin : ''}/`,
-  handleCodeInApp: true,
-};
- 
-    
     /* ── Reset & Base ────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
@@ -851,6 +812,8 @@ const actionCodeSettings = {
           📘 Facebook <span class="soon-badge">Soon</span>
         </button>
       </div>
+      </div>
+
       <!-- Legal -->
       <p class="legal-text">
         By continuing, you agree to our
